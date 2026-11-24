@@ -123,6 +123,20 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
     </div>
   </section>
 
+  <!-- ═══ BANDA: en tu empresa, no en una presentación ═══ -->
+  <section class="band" aria-label="Trabajamos en tu empresa">
+    <div class="band__frame">
+      <img class="band__img" src="/img/taller-panoramica.webp"
+        srcset="/img/taller-panoramica-1000.webp 1000w, /img/taller-panoramica.webp 2000w" sizes="100vw"
+        width="2000" height="666" loading="lazy" decoding="async"
+        alt="Un consultor escucha a un responsable de taller que le explica una pieza mecanizada junto a un centro de mecanizado" />
+    </div>
+    <div class="band__copy wrap">
+      <p class="band__quote">Trabajamos contigo en tu negocio, <span>no desde una presentación.</span></p>
+      <span class="rubber band__stamp" aria-hidden="true">A pie de taller</span>
+    </div>
+  </section>
+
   <!-- ═══ METODOLOGÍA: estaciones selladas ═══ -->
   <section class="section field-paper method" id="metodologia" aria-labelledby="met-title">
     <div class="wrap">
@@ -180,6 +194,12 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
         <ul class="about__disc reveal" aria-label="Experiencia del equipo">
           <li>Ingeniería</li><li>Finanzas</li><li>Ventas y marketing</li><li>Dirección de empresas</li>
         </ul>
+        <figure class="print print--about" data-r="-2" style="--r:-2deg">
+          <svg class="print__clip" viewBox="0 0 24 60" aria-hidden="true"><path d="M7 14 V44 a5 5 0 0 0 10 0 V9 a8 8 0 0 0 -16 0 V46 a11 11 0 0 0 22 0 V16" fill="none" stroke="#B9C0C9" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <div class="print__img"><img src="/img/revisando-numeros.webp" width="900" height="900" loading="lazy" decoding="async"
+            alt="Una responsable de producción y un consultor revisan juntos una hoja de márgenes, con una pieza de latón y una calculadora sobre la mesa" /></div>
+          <figcaption>Números sin filtros, sobre la mesa.</figcaption>
+        </figure>
       </div>
       <div class="about__body">
         <p class="reveal">Consultor y colaboradores tenemos experiencia real dirigiendo empresas. Conocemos la presión de las nóminas, lo difícil que es delegar y la sensación de que, si no estás encima de todo, las cosas no salen.</p>
@@ -205,6 +225,12 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
         <h2 id="contact-title" class="contact__title">¿Hablamos?</h2>
         <p class="lede">Cuéntanos tu situación sin compromiso. Si creemos que podemos ayudarte, te lo diremos. Si no, también.</p>
         <p class="contact__mail">O escríbenos a <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+        <figure class="print print--contact" data-r="2" style="--r:2deg">
+          <svg class="print__clip" viewBox="0 0 24 60" aria-hidden="true"><path d="M7 14 V44 a5 5 0 0 0 10 0 V9 a8 8 0 0 0 -16 0 V46 a11 11 0 0 0 22 0 V16" fill="none" stroke="#9AA3AE" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <div class="print__img"><img src="/img/entrega-carpeta.webp" width="900" height="900" loading="lazy" decoding="async"
+            alt="Una responsable de almacén entrega una carpeta dorada a un compañero junto a un tablero de planificación" /></div>
+          <figcaption>El objetivo: que tu equipo siga solo.</figcaption>
+        </figure>
       </div>
       <ContactForm />
     </div>
@@ -232,6 +258,23 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
       y: 26, filter: "blur(6px)", duration: 1.2, ease: "expo.out", stagger: 0.07, delay: 0.05, clearProps: "filter",
     });
     gsap.from(".hero__spine", { yPercent: 18, duration: 1.6, ease: "expo.out", delay: 0.15 });
+  }
+
+  // Banda de cine: se abre como un telón y la imagen se desplaza con profundidad
+  if (!reduce) {
+    const band = document.querySelector<HTMLElement>(".band");
+    if (band) {
+      gsap.fromTo(band, { "--clip": "18%" }, { "--clip": "0%", ease: "none",
+        scrollTrigger: { trigger: band, start: "top bottom", end: "top 35%", scrub: 0.6 } });
+      gsap.fromTo(band, { "--py": "-16%", "--sc": 1.08 }, { "--py": "0%", "--sc": 1, ease: "none",
+        scrollTrigger: { trigger: band, start: "top bottom", end: "bottom top", scrub: 0.6 } });
+      gsap.from(".band__quote", { y: 40, duration: 1.2, ease: "expo.out", scrollTrigger: { trigger: band, start: "top 65%" } });
+    }
+    gsap.utils.toArray<HTMLElement>(".print").forEach((el) => {
+      gsap.from(el, { y: 70, rotate: (Number(el.dataset.r) || 0) * 3, duration: 1.3, ease: "expo.out", clearProps: "transform",
+        scrollTrigger: { trigger: el, start: "top 88%" } });
+      gsap.to(el.querySelector("img"), { yPercent: -6, ease: "none", scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true } });
+    });
   }
 
   // Sobre Arcansi: subrayado que se dibuja y marca de agua que gira con el scroll
@@ -405,6 +448,36 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .desk__close .rubber { font-size: 1.3rem; padding: .55rem .95rem; }
   @media (max-width: 960px) { .desk__grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .desk__grid { grid-template-columns: 1fr; gap: .9rem; } }
+
+  /* ── Fotos impresas con clip ── */
+  .print { position: relative; margin: 3rem 0 0; background: #FBFBF9; padding: 12px 12px 0; width: min(100%, 380px); transform: rotate(var(--r));
+    box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 24px 44px -20px rgba(0,0,0,.55); transition: transform .6s var(--ease-out); }
+  .print:hover { transform: rotate(0deg) scale(1.02); }
+  .print__img { overflow: hidden; aspect-ratio: 4 / 3.4; }
+  .print__img img { width: 100%; height: 112%; object-fit: cover; display: block; filter: saturate(.9) contrast(1.03); }
+  .print figcaption { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .09em; font-size: .98rem; color: var(--navy); padding: .85rem .3rem .9rem; }
+  .print__clip { position: absolute; left: 50%; top: -1.7rem; width: 18px; height: 46px; translate: -50% 0; z-index: 2; transform: rotate(-6deg); }
+  .print--contact { margin-top: 2.75rem; }
+  .print--contact .print__img img { object-position: 50% 40%; }
+  @media (max-width: 900px) { .print { width: min(100%, 340px); } }
+
+  /* ── Banda de cine ── */
+  .band { position: relative; background: var(--navy-deep); overflow: hidden; isolation: isolate; }
+  .band__frame { height: clamp(380px, 52vw, 700px); overflow: hidden; clip-path: inset(var(--clip, 0%) 0 var(--clip, 0%) 0); }
+  .band__img { width: 100%; height: 112%; object-fit: cover; object-position: 92% 45%; translate: 0 var(--py, -8%); scale: var(--sc, 1); }
+  .band::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background: linear-gradient(to right, rgba(0,17,43,.92) 0%, rgba(0,17,43,.55) 34%, rgba(0,17,43,0) 58%),
+                linear-gradient(to top, rgba(0,17,43,.6), rgba(0,17,43,0) 40%); }
+  .band__copy { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1.5rem; pointer-events: none; }
+  .band__quote { font-family: var(--font-display); font-size: clamp(2rem, 1.3rem + 2.6vw, 3.6rem); line-height: 1.06; letter-spacing: -.015em; color: #fff; max-width: 13ch; }
+  .band__quote span { color: var(--gold); }
+  .band .band__stamp { color: var(--gold); font-size: 1.15rem; padding: .55rem .95rem; }
+  @media (max-width: 700px) {
+    .band__frame { height: 460px; }
+    .band__img { object-position: 72% 50%; }
+    .band::after { background: linear-gradient(to top, rgba(0,17,43,.95) 0%, rgba(0,17,43,.6) 45%, rgba(0,17,43,.1) 75%); }
+    .band__copy { justify-content: flex-end; padding-bottom: 2.5rem; }
+  }
 
   /* ── Metodología ── */
   .method__block { display: grid; grid-template-columns: minmax(180px, 1fr) 3.4fr; gap: clamp(1.5rem, 3vw, 3rem); margin-bottom: clamp(3rem, 6vw, 4.5rem); }
