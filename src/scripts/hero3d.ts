@@ -69,30 +69,36 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   const sheets: Sheet[] = [];
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-  // Destino ordenado: pila dentro del archivador (borde derecho)
+  // Destino ordenado: pila de frente junto al archivador.
   const stackX = isSmall ? 1.45 : 2.85;
+  const stackRot = new THREE.Euler(-0.42, -0.34, -0.06);
+  // Normal de la pila: las hojas se separan a lo largo de ella, así nunca se atraviesan.
+  const stackNormal = new THREE.Vector3(0, 0, 1).applyEuler(stackRot);
+  const stackBase = new THREE.Vector3(stackX, -0.45, 2.1);
   for (let i = 0; i < count; i++) {
     const mat = new THREE.MeshStandardMaterial({ map: textures[i % textures.length], roughness: 0.92, metalness: 0, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geo, mat);
     // El desorden vive a la derecha y en los bordes: el titular (izquierda) queda limpio.
     const right = true;
     const cx = isSmall
-      ? rand(1.35, 2.7)
+      ? rand(1.6, 2.8)
       : (right ? rand(2.6, 7) : rand(-7.5, -4));
     const cy = isSmall
       ? (right ? rand(-1.5, 5.5) : rand(-5.5, -3.5))
       : (right ? rand(-3, 3) : (Math.random() < .5 ? rand(2.4, 3.2) : rand(-3.4, -2.6)));
     // Cada folio en su propia capa de profundidad, con poca inclinación: no se atraviesan.
-    const layer = (isSmall ? -0.5 : 1.4) - i * (isSmall ? 0.42 : 0.36);
+    // Capas bien separadas y poca inclinación fuera del plano: los folios no se cruzan.
+    const layer = (isSmall ? -0.5 : 1.6) - i * (isSmall ? 0.55 : 0.5);
     const chaos = {
       pos: new THREE.Vector3(cx, cy, layer),
-      rot: new THREE.Euler(rand(-0.22, 0.22), rand(-0.28, 0.28), rand(-1.4, 1.4)),
+      rot: new THREE.Euler(rand(-0.12, 0.12), rand(-0.14, 0.14), rand(-1.4, 1.4)),
     };
-    // Destino: una pila de folios cuadrada, de frente, junto al archivador.
-    // Separación mínima en la normal y un leve desalineado, como papel real bien apilado.
+    // Destino: pila cuadrada. El folio 0 (el más cercano en el desorden) queda arriba:
+    // el orden de profundidad se conserva y ninguna hoja pasa a través de otra.
     const order = {
-      pos: new THREE.Vector3(stackX + rand(-0.015, 0.015), -0.55 + i * 0.011, 2.1 + i * 0.03),
-      rot: new THREE.Euler(-0.42, -0.34, -0.06 + rand(-0.012, 0.012)),
+      pos: stackBase.clone().addScaledVector(stackNormal, (count - 1 - i) * 0.026)
+        .add(new THREE.Vector3(rand(-0.012, 0.012), rand(-0.012, 0.012), 0)),
+      rot: new THREE.Euler(stackRot.x, stackRot.y, stackRot.z + rand(-0.01, 0.01)),
     };
     mesh.position.copy(chaos.pos); mesh.rotation.copy(chaos.rot);
     scene.add(mesh);
@@ -140,6 +146,12 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
       qa.setFromEuler(cr); qb.setFromEuler(s.order.rot);
       s.mesh.quaternion.slerpQuaternions(qa, qb, e);
     });
+    // Brújula: la aguja busca rumbo en el desorden y se fija al norte al ordenarse
+    const settle = 1 - Math.pow(1 - gsap.utils.clamp(0, 1, pr * 1.12), 3);
+    const wander = Math.sin(t * 0.9) * 70 + Math.sin(t * 0.37 + 1.3) * 55;
+    const needle = wander * (1 - settle) + Math.sin(t * 7) * 3 * (1 - settle);
+    section.style.setProperty("--needle", `${needle.toFixed(2)}deg`);
+
     camera.position.x += (state.mx * 0.35 - camera.position.x) * 0.04;
     camera.position.y += (-state.my * 0.25 - camera.position.y) * 0.04;
     camera.lookAt(0, 0, 0);
@@ -158,6 +170,7 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   if (opts.reduce) {
     state.progress = 0;
     render();
+    section.style.setProperty("--needle", "0deg");
     return;
   }
 

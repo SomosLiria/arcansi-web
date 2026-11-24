@@ -22,6 +22,19 @@ const onScroll = () => tabs?.classList.toggle("is-scrolled", window.scrollY > 40
 window.addEventListener("scroll", onScroll, { passive: true });
 onScroll();
 
+// Brújula del logo: la aguja se balancea con la velocidad del scroll y vuelve al norte
+const navMark = tabs?.querySelector<SVGElement>(".tabs__mark");
+if (navMark && !reduce) {
+  let last = window.scrollY, idle: number | undefined;
+  window.addEventListener("scroll", () => {
+    const d = window.scrollY - last; last = window.scrollY;
+    const a = Math.max(-38, Math.min(38, d * 1.4));
+    navMark.style.setProperty("--needle", `${a}deg`);
+    clearTimeout(idle);
+    idle = window.setTimeout(() => navMark.style.setProperty("--needle", "0deg"), 140);
+  }, { passive: true });
+}
+
 const toggle = tabs?.querySelector<HTMLButtonElement>(".tabs__toggle");
 const nav = document.getElementById("tabs-nav");
 toggle?.addEventListener("click", () => {
