@@ -1,0 +1,352 @@
+---
+import Base from "../layouts/Base.astro";
+import ContactForm from "../components/ContactForm.astro";
+import { SITE, SITUACIONES, SERVICIOS, COLABORADORES, ANALISIS, CONSULTORIA, PRINCIPIOS, VALORES } from "../data/site";
+
+const rots = [-4.5, 3, -2, 5, -3.5, 2.5];
+const offs = [10, -18, 26, -8, 18, -14];
+---
+<Base
+  title="Arcansi · Consultoría empresarial pragmática para pymes"
+  description={SITE.description}
+>
+  <!-- ═══ PORTADA ═══ -->
+  <section class="hero field-navy" id="hero" aria-labelledby="hero-title">
+    <canvas class="hero__canvas" aria-hidden="true"></canvas>
+    <div class="hero__spine spine" aria-hidden="true">
+      <span class="spine__ring"></span>
+      <span class="spine__label">Arcansi · Archivo de dirección</span>
+    </div>
+    <div class="wrap hero__inner">
+      <h1 id="hero-title" class="hero__title">Hemos estado exactamente donde estás tú&nbsp;ahora.</h1>
+      <p class="hero__sub">
+        <strong>Consultoría empresarial pragmática para pymes de toda España.</strong>
+        Sabemos lo que es facturar y no ver el beneficio, tener un equipo que depende de ti para todo o vivir desencuentros entre socios. Te ayudamos a profesionalizar tu empresa para que vuelvas a disfrutarla.
+      </p>
+      <div class="hero__actions">
+        <a href="/contacto/" class="stamp">
+          Cuéntanos tu situación
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#situaciones" class="hero__link">¿Te reconoces? Mira estas situaciones</a>
+      </div>
+      <p class="hero__aside">¿En tu empresa se dice eso de «aquí funcionamos como pollos sin cabeza»? <span>Cambiémoslo.</span></p>
+    </div>
+  </section>
+
+  <!-- ═══ SITUACIONES: folios sueltos ═══ -->
+  <section class="section field-paper desk" id="situaciones" aria-labelledby="sit-title">
+    <div class="wrap">
+      <header class="desk__head">
+        <h2 id="sit-title" class="reveal">¿Reconoces alguna de estas situaciones?</h2>
+        <p class="lede muted reveal">No eres el único. Son más comunes de lo que crees, y todas tienen solución.</p>
+      </header>
+      <div class="desk__grid">
+        {SITUACIONES.map((s, i) => (
+          <article class="folio desk__sheet" data-r={rots[i]} data-o={offs[i]} style={`--r:${rots[i]}deg; --o:${offs[i]}px`}>
+            <h3>{s.titulo}</h3>
+            <ul>{s.puntos.map((p) => <li>{p}</li>)}</ul>
+            <a class="desk__more" href={`/situaciones/#${s.id}`}>Cómo lo ordenamos</a>
+          </article>
+        ))}
+      </div>
+      <div class="desk__close reveal">
+        <p>Todos estos casos, y otros, se pueden arreglar.</p>
+        <span class="rubber" data-stamp="-6">Tiene solución</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ SERVICIOS: la estantería ═══ -->
+  <section class="section field-navy shelf" id="servicios" aria-labelledby="serv-title">
+    <div class="wrap">
+      <header class="shelf__head">
+        <h2 id="serv-title" class="reveal">En qué podemos ayudarte</h2>
+        <p class="lede muted reveal">Cada empresa es diferente. No vendemos paquetes cerrados ni soluciones mágicas: trabajamos sobre lo que de verdad necesitas.</p>
+      </header>
+
+      <div class="shelf__body">
+        <div class="shelf__row" role="tablist" aria-label="Servicios" aria-orientation="horizontal">
+          {SERVICIOS.map((s, i) => (
+            <button
+              class="spine shelf__spine"
+              role="tab"
+              id={`tab-${s.slug}`}
+              aria-controls={`panel-${s.slug}`}
+              aria-selected={i === 0 ? "true" : "false"}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              <span class="spine__ring" aria-hidden="true"></span>
+              <span class="spine__label">{s.lomo}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="shelf__panels">
+          {SERVICIOS.map((s, i) => (
+            <article class="folio shelf__panel" role="tabpanel" id={`panel-${s.slug}`} aria-labelledby={`tab-${s.slug}`} hidden={i !== 0}>
+              <h3>{s.nombre}</h3>
+              <p class="shelf__resumen">{s.resumen}</p>
+              <ul class="checks">
+                {s.checks.map((c) => (
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{c}</li>
+                ))}
+              </ul>
+              <a class="stamp stamp--small" href={`/servicios/${s.slug}/`}>
+                Ver {s.nombre.toLowerCase()}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div class="aux reveal">
+        <p class="label aux__t">Con colaboradores especializados</p>
+        <ul>{COLABORADORES.map((c) => <li>{c}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ METODOLOGÍA: estaciones selladas ═══ -->
+  <section class="section field-paper method" id="metodologia" aria-labelledby="met-title">
+    <div class="wrap">
+      <header class="method__head">
+        <h2 id="met-title" class="reveal">De la escucha a la acción</h2>
+        <p class="lede muted reveal">Sin informes de cien páginas ni diagnósticos interminables. Directos al grano, paso a paso, codo a codo contigo.</p>
+      </header>
+
+      <div class="method__block">
+        <div class="method__phase reveal">
+          <h3>Análisis</h3>
+          <p class="muted">Comprender antes de actuar.</p>
+        </div>
+        <ol class="method__track">
+          {ANALISIS.map((e, i) => (
+            <li class="station folio">
+              <h4>{e.titulo}</h4>
+              <p>{e.texto}</p>
+              <span class="rubber station__stamp" data-stamp={i % 2 ? "5" : "-7"}>{e.sello}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="method__block">
+        <div class="method__phase reveal">
+          <h3>Consultoría</h3>
+          <p class="muted">Con el diagnóstico claro, pasamos a la acción con un plan hecho a medida.</p>
+        </div>
+        <ol class="method__track method__track--3">
+          {CONSULTORIA.map((e, i) => (
+            <li class="station folio">
+              <h4>{e.titulo}</h4>
+              <p>{e.texto}</p>
+              <span class="rubber station__stamp" data-stamp={i % 2 ? "6" : "-5"}>{e.sello}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <p class="principles reveal">
+        {PRINCIPIOS.map((p) => <span>{p}</span>)}
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ SOBRE ARCANSI ═══ -->
+  <section class="section field-navy about" id="sobre-arcansi" aria-labelledby="about-title">
+    <div class="wrap about__grid">
+      <h2 id="about-title" class="about__title reveal">No somos teóricos de sistemas empresariales ni fans del Power&nbsp;Point. <em>Somos empresarios.</em></h2>
+      <div class="about__body">
+        <p class="reveal">Consultor y colaboradores tenemos experiencia real dirigiendo empresas. Conocemos la presión de las nóminas, lo difícil que es delegar y la sensación de que, si no estás encima de todo, las cosas no salen.</p>
+        <p class="reveal">Aportamos la visión externa, fría y pragmática que el día a día no te deja ver. Somos ingenieros, sabemos de finanzas y tenemos mucha experiencia comercial. Analizamos tus números sin filtros, ordenamos tus procesos y te hablamos claro.</p>
+        <ul class="checks checks--navy reveal">
+          {VALORES.map((v) => (
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{v}</li>
+          ))}
+        </ul>
+        <a href="/sobre-arcansi/" class="about__link reveal">Conoce Arcansi</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACTO ═══ -->
+  <section class="section field-gold contact" id="contacto" aria-labelledby="contact-title">
+    <div class="wrap contact__grid">
+      <div>
+        <h2 id="contact-title" class="contact__title">¿Hablamos?</h2>
+        <p class="lede">Cuéntanos tu situación sin compromiso. Si creemos que podemos ayudarte, te lo diremos. Si no, también.</p>
+        <p class="contact__mail">O escríbenos a <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+      </div>
+      <ContactForm />
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches || location.search.includes("nomotion");
+
+  // 3D de portada (carga diferida)
+  const canvas = document.querySelector<HTMLCanvasElement>(".hero__canvas");
+  const hero = document.getElementById("hero");
+  const hasGL = (() => { try { return !!document.createElement("canvas").getContext("webgl2"); } catch { return false; } })();
+  if (canvas && hero && hasGL) {
+    const go = () => import("../scripts/hero3d").then((m) => m.initHero(canvas, hero, { reduce }));
+    "requestIdleCallback" in window ? (window as any).requestIdleCallback(go, { timeout: 900 }) : setTimeout(go, 300);
+  }
+
+  // Folios sueltos que se enderezan al hacer scroll
+  if (!reduce) {
+    gsap.utils.toArray<HTMLElement>(".desk__sheet").forEach((el) => {
+      gsap.fromTo(el,
+        { rotate: Number(el.dataset.r) * 2.2, y: Number(el.dataset.o) * 3, x: Number(el.dataset.o) * 1.2, opacity: 0.4 },
+        { rotate: Number(el.dataset.r) * 0.25, y: 0, x: 0, opacity: 1, ease: "none",
+          scrollTrigger: { trigger: el, start: "top 98%", end: "top 45%", scrub: 0.8 } });
+    });
+  }
+
+  // Estantería: pestañas accesibles
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>(".shelf__spine"));
+  const select = (t: HTMLButtonElement, focus = false) => {
+    tabs.forEach((b) => {
+      const on = b === t;
+      b.setAttribute("aria-selected", String(on));
+      b.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(b.getAttribute("aria-controls")!)!;
+      panel.hidden = !on;
+      if (on && !reduce) gsap.fromTo(panel, { y: 30, opacity: 0, rotate: -1.2 }, { y: 0, opacity: 1, rotate: 0, duration: .7, ease: "expo.out" });
+    });
+    if (focus) t.focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(t));
+    t.addEventListener("keydown", (e) => {
+      const k = e.key;
+      if (k === "ArrowRight" || k === "ArrowDown") { e.preventDefault(); select(tabs[(i + 1) % tabs.length], true); }
+      if (k === "ArrowLeft" || k === "ArrowUp") { e.preventDefault(); select(tabs[(i - 1 + tabs.length) % tabs.length], true); }
+      if (k === "Home") { e.preventDefault(); select(tabs[0], true); }
+      if (k === "End") { e.preventDefault(); select(tabs[tabs.length - 1], true); }
+    });
+  });
+
+  // Los lomos entran en la estantería uno a uno
+  if (!reduce) {
+    gsap.from(".shelf__spine", { y: 80, opacity: 0, duration: 1, ease: "expo.out", stagger: 0.07,
+      scrollTrigger: { trigger: ".shelf__row", start: "top 85%" } });
+  }
+</script>
+
+<style>
+  /* ── Portada ── */
+  .hero { position: relative; min-height: 100svh; overflow: hidden; display: grid; align-items: center; isolation: isolate; }
+  .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+  .hero__inner { padding-block: calc(var(--tab-h) + 3rem) 4rem; }
+  .hero__title { font-size: var(--step-4); max-width: 13ch; letter-spacing: -0.035em; color: #fff;
+    text-shadow: 0 2px 30px rgba(0,17,43,.55); }
+  .hero__sub { margin-top: 1.75rem; max-width: 46ch; font-size: var(--step-1); line-height: 1.5; color: var(--on-navy);
+    text-shadow: 0 1px 18px rgba(0,17,43,.8); }
+  .hero__sub strong { display: block; color: var(--gold); font-weight: 600; font-size: var(--step-0); margin-bottom: .5rem; letter-spacing: .01em; }
+  .hero__actions { margin-top: 2.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; }
+  .hero__link { color: var(--on-navy); font-weight: 600; }
+  .hero__link:hover { color: var(--gold); }
+  .hero__aside { margin-top: 3rem; max-width: 52ch; color: var(--on-navy-soft); font-size: var(--step-0); }
+  .hero__aside span { color: var(--gold); font-weight: 700; }
+  .hero__spine { position: absolute; right: clamp(.75rem, 3vw, 3rem); bottom: 0; top: 18%; width: clamp(64px, 7vw, 104px); z-index: -1;
+    border-radius: 6px 6px 0 0; }
+  .hero__spine .spine__label { font-size: clamp(.9rem, 1.2vw, 1.15rem); padding: 1.4rem .6rem; }
+  @media (max-width: 760px) {
+    .hero__spine { width: 48px; top: 30%; opacity: .9; }
+    .hero__spine .spine__label { display: none; }
+    .hero__title { max-width: 11ch; }
+  }
+
+  /* ── Situaciones ── */
+  .desk { overflow: hidden; }
+  .desk__head { display: grid; gap: 1.25rem; margin-bottom: clamp(3rem, 6vw, 5rem); }
+  .desk__head h2 { font-size: var(--step-3); max-width: 18ch; color: var(--navy); }
+  .desk__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 2.75rem) clamp(1.25rem, 2.5vw, 2.25rem); }
+  .desk__sheet { transform: rotate(calc(var(--r) * .25)); }
+  .desk__sheet:nth-child(3n+2) { margin-top: 3rem; }
+  .desk__sheet h3 { font-size: var(--step-1); color: var(--navy); margin-bottom: 1rem; letter-spacing: -.015em; }
+  .desk__sheet ul { margin: 0 0 1.25rem; padding-left: 1.1rem; display: grid; gap: .5rem; color: var(--ink-soft); }
+  .desk__sheet li::marker { color: var(--gold-press); }
+  .desk__more { font-weight: 600; color: var(--navy); }
+  .desk__close { margin-top: clamp(3.5rem, 7vw, 6rem); display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 2.5rem; }
+  .desk__close p { font-size: var(--step-2); font-weight: 800; color: var(--navy); letter-spacing: -.02em; max-width: 22ch; line-height: 1.1; }
+  .desk__close .rubber { font-size: 1.4rem; padding: .6rem 1rem; }
+  @media (max-width: 960px) { .desk__grid { grid-template-columns: repeat(2, 1fr); } .desk__sheet:nth-child(3n+2) { margin-top: 0; } .desk__sheet:nth-child(2n) { margin-top: 2.5rem; } }
+  @media (max-width: 620px) { .desk__grid { grid-template-columns: 1fr; } .desk__sheet:nth-child(2n) { margin-top: 0; } }
+
+  /* ── Estantería ── */
+  .shelf__head { display: grid; gap: 1.25rem; margin-bottom: clamp(3rem, 6vw, 4.5rem); }
+  .shelf__head h2 { font-size: var(--step-3); color: #fff; max-width: 16ch; }
+  .shelf__body { display: grid; grid-template-columns: auto 1fr; gap: clamp(2rem, 4vw, 4rem); align-items: end; }
+  .shelf__row { display: flex; gap: 10px; align-items: flex-end; padding-bottom: 14px;
+    border-bottom: 14px solid var(--navy-deep); box-shadow: 0 16px 0 -8px rgba(0,0,0,.25); }
+  .shelf__spine { width: clamp(58px, 5.4vw, 74px); height: clamp(360px, 34vw, 460px); border: 0; cursor: pointer; font: inherit;
+    transition: transform .5s var(--ease-out), background-color .25s; }
+  .shelf__spine:nth-child(2n) { height: clamp(340px, 32vw, 430px); background: #0D3270; }
+  .shelf__spine:nth-child(3n) { background: #062559; }
+  .shelf__spine:hover { transform: translateY(-10px); }
+  .shelf__spine[aria-selected="true"] { transform: translateY(-38px); background: var(--gold); }
+  .shelf__spine[aria-selected="true"] .spine__label { background: var(--navy); color: var(--gold); }
+  .shelf__spine[aria-selected="true"] .spine__ring { background: radial-gradient(circle, var(--navy) 0 9px, #fff 9.5px 12px, var(--gold-press) 12.5px); }
+  .shelf__panel { max-width: 560px; }
+  .shelf__panel h3 { font-size: var(--step-2); color: var(--navy); margin-bottom: 1rem; }
+  .shelf__resumen { font-size: var(--step-1); line-height: 1.45; color: var(--ink); margin-bottom: 1.5rem; }
+  .stamp--small { font-size: 1rem; padding: .85rem 1.2rem .8rem; margin-top: 1.75rem; }
+  .aux { margin-top: clamp(4rem, 7vw, 6rem); display: flex; flex-wrap: wrap; align-items: baseline; gap: 1rem 2rem; }
+  .aux__t { color: var(--gold); font-size: 1.1rem; }
+  .aux ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; }
+  .aux li { border: 1.5px solid rgba(233,238,246,.35); border-radius: 6px 6px 0 0; border-bottom: 0;
+    padding: .55rem .9rem .5rem; font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .07em; font-size: .98rem; }
+  @media (max-width: 900px) {
+    .shelf__body { grid-template-columns: 1fr; }
+    .shelf__row { overflow-x: auto; scrollbar-width: none; padding-top: 44px; }
+    .shelf__spine { flex: 0 0 auto; height: 280px !important; }
+  }
+
+  /* ── listas de verificación ── */
+  .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: .7rem; }
+  .checks li { display: grid; grid-template-columns: 1.4rem 1fr; gap: .7rem; align-items: start; font-weight: 500; }
+  .checks svg { width: 1.3rem; height: 1.3rem; color: var(--gold-press); margin-top: .15rem; }
+  .checks--navy svg { color: var(--gold); }
+
+  /* ── Metodología ── */
+  .method__head { display: grid; gap: 1.25rem; margin-bottom: clamp(3rem, 6vw, 5rem); }
+  .method__head h2 { font-size: var(--step-3); color: var(--navy); max-width: 16ch; }
+  .method__block { display: grid; grid-template-columns: minmax(180px, 1fr) 3.4fr; gap: clamp(1.5rem, 3vw, 3rem); margin-bottom: clamp(3rem, 6vw, 5rem); }
+  .method__phase h3 { font-size: var(--step-2); color: var(--navy); }
+  .method__phase p { margin-top: .5rem; max-width: 24ch; }
+  .method__track { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; counter-reset: st; }
+  .method__track--3 { grid-template-columns: repeat(3, 1fr); }
+  .station { padding-bottom: 4.5rem; }
+  .station h4 { font-size: var(--step-1); color: var(--navy); margin-bottom: .6rem; }
+  .station p { font-size: .98rem; color: var(--ink-soft); }
+  .station__stamp { position: absolute; right: 1rem; bottom: 1.1rem; }
+  .principles { display: flex; flex-wrap: wrap; gap: .5rem 0; font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: var(--step-1); color: var(--navy); }
+  .principles span:not(:last-child)::after { content: ""; display: inline-block; width: .45em; height: .45em; border-radius: 50%; background: var(--gold); margin: 0 1rem; vertical-align: .18em; }
+  @media (max-width: 1080px) { .method__block { grid-template-columns: 1fr; } .method__track { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .method__track, .method__track--3 { grid-template-columns: 1fr; } }
+
+  /* ── Sobre ── */
+  .about { background: var(--navy-deep); }
+  .about__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: start; }
+  .about__title { font-size: var(--step-3); color: #fff; }
+  .about__title em { font-style: normal; color: var(--gold); display: block; margin-top: .3em; }
+  .about__body { display: grid; gap: 1.5rem; color: var(--on-navy); }
+  .about__link { color: var(--gold); font-weight: 700; }
+  @media (max-width: 900px) { .about__grid { grid-template-columns: 1fr; } }
+
+  /* ── Contacto ── */
+  .contact__grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: start; }
+  .contact__title { font-size: clamp(3.5rem, 2rem + 6vw, 6rem); letter-spacing: -.04em; margin-bottom: 1.5rem; }
+  .contact .lede { color: var(--navy); }
+  .contact__mail { margin-top: 2rem; font-weight: 600; }
+  .contact__mail a { color: var(--navy); }
+  @media (max-width: 900px) { .contact__grid { grid-template-columns: 1fr; } }
+</style>

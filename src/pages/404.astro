@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Página no encontrada" description="Esta página no existe o se ha movido.">
+  <section class="nf field-navy">
+    <div class="wrap">
+      <span class="rubber nf__stamp">Archivo no encontrado</span>
+      <h1>Este folio no está en el archivo.</h1>
+      <p class="lede">Puede que la página se haya movido. Empieza de nuevo desde la portada o cuéntanos directamente qué buscas.</p>
+      <p class="nf__links"><a class="stamp" href="/">Volver a la portada</a> <a href="/contacto/">Contacto</a></p>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 100svh; display: grid; align-items: center; padding-top: var(--tab-h); }
+  .nf__stamp { font-size: 1.4rem; margin-bottom: 2rem; }
+  h1 { font-size: var(--step-4); color: #fff; max-width: 14ch; margin-bottom: 1.5rem; }
+  .nf__links { margin-top: 2.5rem; display: flex; gap: 2rem; align-items: center; }
+  .nf__links a:not(.stamp) { color: var(--gold); font-weight: 700; }
+</style>

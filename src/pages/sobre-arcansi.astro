@@ -1,0 +1,54 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { VALORES, COLABORADORES } from "../data/site";
+---
+<Base
+  title="Sobre Arcansi: consultores que han dirigido empresas"
+  description="Arcansi es una consultoría para pymes formada por empresarios con experiencia real en dirección, finanzas, ingeniería y ventas. Visión externa, clara y pragmática."
+>
+  <PageHero title="No somos teóricos. Somos empresarios." lomo="Sobre Arcansi" crumbs={[{ href: "/sobre-arcansi/", label: "Sobre Arcansi" }]}>
+    <p>Ni teóricos de sistemas empresariales ni fans de las presentaciones en Power Point.</p>
+  </PageHero>
+
+  <section class="section field-paper">
+    <div class="wrap about">
+      <div class="about__text">
+        <p class="reveal">Los que estamos aquí, consultor y colaboradores, tenemos experiencia real en la dirección de empresas. Entendemos los desafíos que enfrentas: desde la presión de las nóminas hasta la dificultad de delegar el control operativo y la sensación de que, si no estás tú encima de todo, las cosas no salen.</p>
+        <p class="reveal">Queremos ayudarte aportando la visión externa, fría y pragmática que tú, por el día a día o la razón que sea, no alcanzas a ver. Somos ingenieros, sabemos de finanzas, tenemos mucha experiencia en ventas y marketing, y contamos con expertos y expertas que colaboran en {COLABORADORES.join(", ").toLowerCase()}.</p>
+        <p class="reveal">Analizamos tus números sin filtros, estructuramos tus procesos y te hablamos claro. Te damos recomendaciones y ejecutamos contigo acciones precisas que desbloqueen o hagan avanzar una cuestión concreta. Ponemos orden, perspectiva y luz allí donde no la hay o no se ve.</p>
+        <p class="about__strong reveal">Lo nuestro es enfrentarnos al reto de superar las dificultades que encontremos.</p>
+      </div>
+      <aside class="folio about__sheet reveal" aria-labelledby="valores">
+        <h2 id="valores">Lo que no negociamos</h2>
+        <ul class="checks">
+          {VALORES.map((v) => (
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{v}</li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section field-navy">
+    <div class="wrap">
+      <p class="end reveal">Nuestro trabajo termina cuando tu empresa tiene el orden necesario para funcionar de forma profesional, rentable y <span>sin depender necesariamente de ti.</span></p>
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+
+<style>
+  .about { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: start; }
+  .about__text { display: grid; gap: 1.5rem; font-size: var(--step-1); line-height: 1.55; max-width: 44ch; }
+  .about__strong { font-weight: 800; color: var(--navy); }
+  .about__sheet { position: sticky; top: calc(var(--tab-h) + 2rem); transform: rotate(1deg); }
+  .about__sheet h2 { font-size: var(--step-2); color: var(--navy); margin-bottom: 1.25rem; }
+  .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: .9rem; }
+  .checks li { display: grid; grid-template-columns: 1.4rem 1fr; gap: .7rem; font-weight: 600; }
+  .checks svg { width: 1.3rem; height: 1.3rem; color: var(--gold-press); margin-top: .15rem; }
+  .end { font-size: var(--step-3); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; color: #fff; max-width: 22ch; }
+  .end span { color: var(--gold); }
+  @media (max-width: 900px) { .about { grid-template-columns: 1fr; } .about__sheet { position: static; } }
+</style>

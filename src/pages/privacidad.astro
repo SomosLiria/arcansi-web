@@ -1,0 +1,20 @@
+---
+import Legal from "../layouts/Legal.astro";
+import { SITE } from "../data/site";
+---
+<Legal title="Política de privacidad" description="Cómo trata Arcansi los datos que nos envías por el formulario de contacto. Esta web no usa cookies ni trackers.">
+  <h2>Responsable del tratamiento</h2>
+  <p><span class="pending">[PENDIENTE: nombre o razón social, NIF y domicilio]</span>. Contacto: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  <h2>Qué datos tratamos y para qué</h2>
+  <p>Solo los que nos envías por el formulario de contacto (nombre, email, teléfono si lo indicas y tu mensaje), con la única finalidad de responderte.</p>
+  <h2>Base legal</h2>
+  <p>Tu consentimiento al enviarnos el formulario (art. 6.1.a del RGPD).</p>
+  <h2>Conservación</h2>
+  <p>Conservamos tus datos el tiempo necesario para atender tu consulta y, después, durante los plazos legalmente exigibles.</p>
+  <h2>Destinatarios</h2>
+  <p>No cedemos tus datos a terceros salvo obligación legal. El mensaje se envía a través del proveedor de alojamiento de la web, que actúa como encargado del tratamiento.</p>
+  <h2>Tus derechos</h2>
+  <p>Puedes acceder, rectificar, suprimir, oponerte, limitar el tratamiento o pedir la portabilidad de tus datos escribiendo a {SITE.email}. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+  <h2>Cookies</h2>
+  <p>Esta web no utiliza cookies ni herramientas de seguimiento.</p>
+</Legal>

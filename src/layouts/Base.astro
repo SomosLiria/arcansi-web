@@ -1,0 +1,173 @@
+---
+import "../styles/global.css";
+import Logo from "../components/Logo.astro";
+import { SITE, NAV, SERVICIOS } from "../data/site";
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: Record<string, unknown>[];
+  navTone?: "navy" | "paper";
+}
+const { title, description, schema = [], navTone = "navy" } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITE.url).href;
+const path = Astro.url.pathname;
+const fullTitle = path === "/" ? title : `${title} · Arcansi`;
+
+const org = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": `${SITE.url}/#arcansi`,
+  name: SITE.name,
+  url: `${SITE.url}/`,
+  email: SITE.email,
+  logo: `${SITE.url}/favicon.svg`,
+  image: `${SITE.url}/og.png`,
+  description: SITE.description,
+  areaServed: { "@type": "Country", name: "España" },
+  knowsLanguage: "es",
+  slogan: "Consultoría pragmática para dirigentes de pymes",
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Servicios de consultoría para pymes",
+    itemListElement: SERVICIOS.map((s) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/servicios/${s.slug}/` },
+    })),
+  },
+};
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#001C43" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="Arcansi" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${SITE.url}/og.png`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <script type="application/ld+json" set:html={JSON.stringify([org, ...schema])} />
+  </head>
+  <body>
+    <a class="skip" href="#contenido">Saltar al contenido</a>
+    <header class={`tabs tabs--${navTone}`} id="tabs">
+      <div class="tabs__inner wrap">
+        <a href="/" class="tabs__brand" aria-label="Arcansi, inicio">
+          <Logo tone="light" class="tabs__mark" />
+          <span class="label tabs__word">Arcansi</span>
+        </a>
+        <button class="tabs__toggle" aria-expanded="false" aria-controls="tabs-nav">
+          <span class="label">Menú</span>
+        </button>
+        <nav id="tabs-nav" aria-label="Principal">
+          <ul>
+            {NAV.map((n) => (
+              <li><a href={n.href} class="tab" aria-current={path.startsWith(n.href) ? "page" : undefined}>{n.label}</a></li>
+            ))}
+            <li><a href="/contacto/" class="tab tab--gold" aria-current={path.startsWith("/contacto") ? "page" : undefined}>Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <footer class="foot field-navy">
+      <div class="wrap foot__grid">
+        <div class="foot__brand">
+          <Logo tone="light" class="foot__mark" />
+          <p class="label foot__name">Arcansi</p>
+          <p class="muted">Consultoría para pymes de toda España. Constructiva, clara y pragmática.</p>
+          <a class="foot__mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+        </div>
+        <nav aria-label="Servicios" class="foot__col">
+          <p class="label foot__h">Servicios</p>
+          <ul>{SERVICIOS.map((s) => <li><a href={`/servicios/${s.slug}/`}>{s.nombre}</a></li>)}</ul>
+        </nav>
+        <nav aria-label="Arcansi" class="foot__col">
+          <p class="label foot__h">Arcansi</p>
+          <ul>
+            {NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            <li><a href="/contacto/">Contacto</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="wrap foot__base">
+        <p>© {new Date().getFullYear()} Arcansi · Esta web no utiliza cookies ni trackers</p>
+        <p><a href="/aviso-legal/">Aviso legal</a> · <a href="/privacidad/">Privacidad</a></p>
+        <p>Diseño y desarrollo: <a href={SITE.builder.url} rel="noopener">{SITE.builder.name}</a></p>
+      </div>
+    </footer>
+
+    <script>
+      import "../scripts/motion";
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Pestañas separadoras como navegación */
+  .tabs { position: fixed; inset: 0 0 auto; z-index: 50; height: var(--tab-h);
+    transition: background-color .3s, box-shadow .3s; }
+  .tabs--navy { color: var(--on-navy); }
+  .tabs--paper { background: var(--navy); color: var(--on-navy); }
+  .tabs.is-scrolled { background: var(--navy); color: var(--on-navy); box-shadow: 0 8px 24px -16px rgba(0,0,0,.6); }
+  .tabs__inner { height: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+  .tabs__brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; align-self: center; }
+  :global(.tabs__mark) { width: 30px; }
+  .tabs__word { font-size: 1.35rem; letter-spacing: .22em; }
+  nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: .25rem; }
+  .tab {
+    display: block; text-decoration: none; padding: .85rem 1.1rem .8rem;
+    font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 1.02rem; line-height: 1;
+    border-radius: 8px 8px 0 0; color: inherit;
+    background: rgba(255,255,255,.06);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+    transform: translateY(4px); transition: transform .3s var(--ease-out), background-color .2s;
+  }
+  .tab:hover { transform: translateY(0); background: rgba(255,255,255,.14); }
+  .tab[aria-current="page"] { background: var(--paper); color: var(--navy); transform: translateY(0); }
+  .tab--gold { background: var(--gold) !important; color: var(--navy) !important; }
+  .tabs__toggle { display: none; }
+
+  @media (max-width: 860px) {
+    .tabs { background: var(--navy); color: var(--on-navy); }
+    .tabs__inner { align-items: center; }
+    .tabs__toggle { display: block; background: transparent; color: inherit; border: 2px solid currentColor; border-radius: 4px; padding: .5rem .8rem; cursor: pointer; }
+    nav { position: fixed; inset: var(--tab-h) 0 auto; background: var(--navy); padding: 1rem var(--gutter) 2rem;
+      clip-path: inset(0 0 100% 0); transition: clip-path .45s var(--ease-out); }
+    nav.is-open { clip-path: inset(0 0 0 0); }
+    nav ul { flex-direction: column; gap: .5rem; }
+    .tab { transform: none; border-radius: 4px; font-size: 1.4rem; padding: 1rem; }
+  }
+
+  .foot { padding-block: 5rem 2rem; }
+  .foot__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 3rem; }
+  :global(.foot__mark) { width: 54px; margin-bottom: 1rem; }
+  .foot__name { font-size: 1.8rem; letter-spacing: .24em; margin-bottom: .75rem; }
+  .foot__brand p.muted { max-width: 32ch; }
+  .foot__mail { display: inline-block; margin-top: 1.25rem; color: var(--gold); font-weight: 600; }
+  .foot__h { color: var(--gold); font-size: 1.05rem; margin-bottom: 1rem; }
+  .foot ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .55rem; }
+  .foot__col a { text-decoration: none; color: var(--on-navy-soft); }
+  .foot__col a:hover { color: var(--on-navy); text-decoration: underline; }
+  .foot__base { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid rgba(233,238,246,.14);
+    display: flex; flex-wrap: wrap; gap: .75rem 2rem; justify-content: space-between; font-size: var(--step--1); color: var(--on-navy-soft); }
+  @media (max-width: 760px) { .foot__grid { grid-template-columns: 1fr; } }
+</style>

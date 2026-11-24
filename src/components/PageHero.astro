@@ -1,0 +1,38 @@
+---
+interface Props { title: string; lomo: string; crumbs?: { href: string; label: string }[]; }
+const { title, lomo, crumbs = [] } = Astro.props;
+---
+<section class="phero field-navy">
+  <div class="wrap phero__inner">
+    {crumbs.length > 0 && (
+      <nav aria-label="Ruta" class="phero__crumbs">
+        <ol>
+          <li><a href="/">Inicio</a></li>
+          {crumbs.map((c, i) => (
+            <li>{i === crumbs.length - 1 ? <span aria-current="page">{c.label}</span> : <a href={c.href}>{c.label}</a>}</li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <h1 class="phero__title">{title}</h1>
+    <div class="phero__intro"><slot /></div>
+  </div>
+  <div class="phero__spine spine" aria-hidden="true">
+    <span class="spine__ring"></span>
+    <span class="spine__label">{lomo}</span>
+  </div>
+</section>
+
+<style>
+  .phero { position: relative; overflow: hidden; padding-block: calc(var(--tab-h) + clamp(3.5rem, 8vw, 7rem)) clamp(4rem, 8vw, 7rem); }
+  .phero__inner { position: relative; z-index: 1; }
+  .phero__crumbs ol { list-style: none; margin: 0 0 2rem; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; font-size: var(--step--1); color: var(--on-navy-soft); }
+  .phero__crumbs li:not(:last-child)::after { content: "/"; margin-left: .4rem; opacity: .5; }
+  .phero__crumbs a { color: var(--on-navy-soft); }
+  .phero__crumbs [aria-current] { color: var(--gold); }
+  .phero__title { font-size: var(--step-4); color: #fff; max-width: 15ch; letter-spacing: -.035em; }
+  .phero__intro { margin-top: 1.75rem; max-width: 52ch; font-size: var(--step-1); line-height: 1.5; color: var(--on-navy); display: grid; gap: 1rem; }
+  .phero__spine { position: absolute; right: clamp(.75rem, 4vw, 4rem); top: 22%; bottom: -1rem; width: clamp(56px, 6.5vw, 96px); }
+  .phero__spine .spine__label { font-size: clamp(.95rem, 1.3vw, 1.2rem); padding: 1.4rem .6rem; }
+  @media (max-width: 760px) { .phero__spine { display: none; } }
+</style>

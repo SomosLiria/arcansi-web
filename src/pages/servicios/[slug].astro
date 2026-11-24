@@ -1,0 +1,128 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import { SITE, SERVICIOS, SITUACIONES, ANALISIS, CONSULTORIA } from "../../data/site";
+
+export function getStaticPaths() {
+  return SERVICIOS.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props;
+const url = `${SITE.url}/servicios/${s.slug}/`;
+const relacionadas = SITUACIONES.filter((x) => x.servicios.includes(s.slug));
+const otros = SERVICIOS.filter((x) => x.slug !== s.slug);
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: s.nombre,
+    serviceType: `Consultoría de ${s.nombre.toLowerCase()} para pymes`,
+    description: s.seoDescription,
+    url,
+    provider: { "@id": `${SITE.url}/#arcansi` },
+    areaServed: { "@type": "Country", name: "España" },
+    audience: { "@type": "BusinessAudience", name: "Dirigentes de pymes" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: `${SITE.url}/` },
+      { "@type": "ListItem", position: 2, name: "Servicios", item: `${SITE.url}/servicios/` },
+      { "@type": "ListItem", position: 3, name: s.nombre, item: url },
+    ],
+  },
+];
+---
+<Base title={s.seoTitle} description={s.seoDescription} schema={schema}>
+  <PageHero title={s.nombre} lomo={s.lomo} crumbs={[{ href: "/servicios/", label: "Servicios" }, { href: url, label: s.nombre }]}>
+    <p>{s.resumen}</p>
+  </PageHero>
+
+  <section class="section field-paper">
+    <div class="wrap svc">
+      <div class="svc__text">
+        {s.intro.map((p) => <p class="reveal">{p}</p>)}
+      </div>
+      <aside class="folio svc__sheet reveal" aria-labelledby="que-hacemos">
+        <h2 id="que-hacemos">Qué hacemos</h2>
+        <ul class="checks">
+          {s.checks.map((c) => (
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{c}</li>
+          ))}
+        </ul>
+        <span class="rubber svc__stamp" data-stamp="-6">A medida</span>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section field-navy signals" aria-labelledby="senales">
+    <div class="wrap">
+      <h2 id="senales" class="signals__title reveal">Lo necesitas si…</h2>
+      <ul class="signals__list">
+        {s.senales.map((x) => <li class="reveal">{x}</li>)}
+      </ul>
+      {relacionadas.length > 0 && (
+        <p class="signals__rel reveal">
+          Situaciones relacionadas:{" "}
+          {relacionadas.map((r, i) => (<>{i > 0 && " · "}<a href={`/situaciones/#${r.id}`}>{r.titulo}</a></>))}
+        </p>
+      )}
+    </div>
+  </section>
+
+  <section class="section field-paper">
+    <div class="wrap how">
+      <h2 class="how__title reveal">Cómo lo trabajamos</h2>
+      <ol class="how__steps">
+        {[...ANALISIS, ...CONSULTORIA.slice(0, 2)].map((e) => (
+          <li class="reveal"><span class="label">{e.titulo}</span><p>{e.texto}</p></li>
+        ))}
+      </ol>
+      <a class="how__link reveal" href="/metodologia/">Ver la metodología completa</a>
+    </div>
+  </section>
+
+  <CtaBand title={`¿Hablamos de ${s.nombre.toLowerCase()}?`} />
+
+  <section class="section field-paper others" aria-labelledby="otros">
+    <div class="wrap">
+      <h2 id="otros" class="label others__t">Otros servicios</h2>
+      <ul class="others__row">
+        {otros.map((o) => (
+          <li><a class="spine others__spine" href={`/servicios/${o.slug}/`}><span class="spine__ring" aria-hidden="true"></span><span class="spine__label">{o.lomo}</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .svc { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: start; }
+  .svc__text { display: grid; gap: 1.5rem; font-size: var(--step-1); line-height: 1.55; max-width: 40ch; color: var(--ink); }
+  .svc__sheet h2 { font-size: var(--step-2); color: var(--navy); margin-bottom: 1.25rem; }
+  .svc__sheet { padding-bottom: 5rem; transform: rotate(1deg); }
+  .svc__stamp { position: absolute; right: 1.5rem; bottom: 1.5rem; font-size: 1.1rem; }
+  .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: .8rem; }
+  .checks li { display: grid; grid-template-columns: 1.4rem 1fr; gap: .7rem; font-weight: 500; }
+  .checks svg { width: 1.3rem; height: 1.3rem; color: var(--gold-press); margin-top: .15rem; }
+  .signals__title { font-size: var(--step-3); color: #fff; margin-bottom: 2.5rem; }
+  .signals__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid rgba(233,238,246,.18); }
+  .signals__list li { font-size: var(--step-2); font-weight: 700; letter-spacing: -.02em; line-height: 1.2; padding: 1.4rem 0; border-bottom: 1px solid rgba(233,238,246,.18); color: var(--on-navy); }
+  .signals__rel { margin-top: 2.5rem; color: var(--on-navy-soft); }
+  .signals__rel a { color: var(--gold); }
+  .how__title { font-size: var(--step-3); color: var(--navy); margin-bottom: 2.5rem; }
+  .how__steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem 2.5rem; }
+  .how__steps .label { display: block; color: var(--navy); font-size: 1.3rem; margin-bottom: .5rem; padding-top: .9rem; border-top: 3px solid var(--gold); }
+  .how__steps p { color: var(--ink-soft); font-size: .98rem; }
+  .how__link { display: inline-block; margin-top: 2.5rem; font-weight: 700; color: var(--navy); }
+  .others { padding-block: 4rem 0; overflow: hidden; }
+  .others__t { color: var(--navy); font-size: 1.2rem; margin-bottom: 1.5rem; }
+  .others__row { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; align-items: flex-end; }
+  .others__spine { width: 64px; height: 230px; text-decoration: none; transition: transform .4s var(--ease-out); }
+  .others__row li:nth-child(2n) .others__spine { height: 200px; background: #0D3270; }
+  .others__spine:hover { transform: translateY(-14px); }
+  @media (max-width: 900px) { .svc { grid-template-columns: 1fr; } .how__steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .how__steps { grid-template-columns: 1fr; } .others__row { overflow-x: auto; } .others__spine { flex: 0 0 auto; } }
+</style>

@@ -1,0 +1,121 @@
+---
+// Envía al php/sendmail.php existente en Hostinger (espera JSON { ok, error }).
+---
+<form class="cform folio" id="contactForm" method="POST" action="/php/sendmail.php" novalidate>
+  <input type="hidden" name="csrf" id="csrf" value="" />
+  <div class="cform__hp" aria-hidden="true">
+    <label for="website">Website</label>
+    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+  <p class="cform__msg" role="status" aria-live="polite" hidden></p>
+  <div class="cform__row">
+    <div class="cform__field">
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" name="nombre" required maxlength="80" autocomplete="name" />
+      <span class="cform__err" id="nombre-err">Escribe tu nombre para poder responderte.</span>
+    </div>
+    <div class="cform__field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required maxlength="120" autocomplete="email" />
+      <span class="cform__err" id="email-err">Revisa el email: así no te llegará la respuesta.</span>
+    </div>
+  </div>
+  <div class="cform__field">
+    <label for="telefono">Teléfono <span class="cform__opt">(opcional)</span></label>
+    <input type="tel" id="telefono" name="telefono" maxlength="20" autocomplete="tel" />
+  </div>
+  <div class="cform__field">
+    <label for="mensaje">Cuéntanos tu situación</label>
+    <textarea id="mensaje" name="mensaje" required maxlength="2000" rows="6" placeholder="¿Qué está pasando en tu empresa? ¿En qué crees que podemos ayudarte?"></textarea>
+    <span class="cform__err" id="mensaje-err">Cuéntanos un poco más (al menos 10 caracteres).</span>
+  </div>
+  <div class="cform__foot">
+    <button type="submit" class="stamp" id="submitBtn">
+      <span class="cform__btxt">Enviar mensaje</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <p class="cform__note">Te responderemos personalmente por email. Sin spam y sin seguimiento comercial. Tus datos solo se usan para contestarte. <a href="/privacidad/">Privacidad</a>.</p>
+  </div>
+</form>
+
+<script>
+  const form = document.getElementById("contactForm") as HTMLFormElement | null;
+  if (form) {
+    const csrf = form.querySelector<HTMLInputElement>("#csrf")!;
+    const btn = form.querySelector<HTMLButtonElement>("#submitBtn")!;
+    const btxt = btn.querySelector(".cform__btxt")!;
+    const msg = form.querySelector<HTMLParagraphElement>(".cform__msg")!;
+    const token = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+    csrf.value = token();
+
+    const show = (type: "ok" | "error", text: string) => { msg.hidden = false; msg.dataset.type = type; msg.textContent = text; };
+    const mark = (el: HTMLInputElement | HTMLTextAreaElement, bad: boolean) => {
+      el.setAttribute("aria-invalid", String(bad));
+      if (bad) el.setAttribute("aria-describedby", `${el.id}-err`); else el.removeAttribute("aria-describedby");
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.hidden = true;
+      if ((form.querySelector("#website") as HTMLInputElement).value) { form.reset(); return; }
+      const nombre = form.querySelector<HTMLInputElement>("#nombre")!;
+      const email = form.querySelector<HTMLInputElement>("#email")!;
+      const mensaje = form.querySelector<HTMLTextAreaElement>("#mensaje")!;
+      const bad = [
+        [nombre, !nombre.value.trim()],
+        [email, !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())],
+        [mensaje, mensaje.value.trim().length < 10],
+      ] as const;
+      bad.forEach(([el, b]) => mark(el, b));
+      const first = bad.find(([, b]) => b);
+      if (first) { show("error", "Revisa los campos marcados antes de enviar."); first[0].focus(); return; }
+
+      btn.disabled = true; btxt.textContent = "Enviando…";
+      try {
+        const res = await fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (data.ok) {
+          show("ok", "Mensaje recibido. Te escribiremos personalmente muy pronto.");
+          form.reset(); csrf.value = token();
+        } else {
+          show("error", data.error || "No hemos podido enviar el mensaje. Inténtalo de nuevo o escríbenos a consultoria@arcansi.com.");
+        }
+      } catch {
+        show("error", "No hay conexión con el servidor. Inténtalo en unos minutos o escríbenos a consultoria@arcansi.com.");
+      } finally {
+        btn.disabled = false; btxt.textContent = "Enviar mensaje";
+      }
+    });
+  }
+</script>
+
+<style>
+  .cform { display: grid; gap: 1.25rem; color: var(--ink); }
+  .cform__hp { position: absolute; left: -9999px; }
+  .cform__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .cform__field { display: grid; gap: .4rem; }
+  label { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 1rem; color: var(--navy); }
+  .cform__opt { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--ink-soft); font-family: var(--font-body); font-size: .9rem; }
+  input, textarea {
+    font: inherit; color: var(--ink); background: transparent; width: 100%;
+    border: 0; border-bottom: 2px solid #C8CBCF; border-radius: 0; padding: .6rem 0 .55rem;
+    transition: border-color .2s;
+  }
+  textarea { resize: vertical; min-height: 9rem; line-height: 1.55;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.55em - 1px), rgba(0,28,67,.12) calc(1.55em - 1px) 1.55em);
+    background-attachment: local; border-bottom-color: #C8CBCF; }
+  textarea::placeholder { color: #6B7381; }
+  input:hover, textarea:hover { border-color: var(--presspan); }
+  input:focus, textarea:focus { outline: none; border-color: var(--navy); }
+  input:focus-visible, textarea:focus-visible { outline: none; box-shadow: 0 2px 0 0 var(--gold); }
+  .cform__err { display: none; font-size: .88rem; color: #A3200F; }
+  [aria-invalid="true"] { border-color: #A3200F; }
+  [aria-invalid="true"] + .cform__err { display: block; }
+  .cform__msg { padding: .8rem 1rem; border: 2px solid currentColor; border-radius: 4px; font-weight: 600; }
+  .cform__msg[data-type="ok"] { color: #155B32; }
+  .cform__msg[data-type="error"] { color: #A3200F; }
+  .cform__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; margin-top: .5rem; }
+  .cform__note { flex: 1 1 260px; font-size: var(--step--1); color: var(--ink-soft); }
+  @media (max-width: 640px) { .cform__row { grid-template-columns: 1fr; } }
+</style>

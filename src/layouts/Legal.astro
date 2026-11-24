@@ -1,0 +1,21 @@
+---
+import Base from "./Base.astro";
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+---
+<Base title={title} description={description} navTone="paper">
+  <article class="legal field-paper">
+    <div class="wrap legal__inner">
+      <h1>{title}</h1>
+      <div class="legal__body"><slot /></div>
+    </div>
+  </article>
+</Base>
+<style>
+  .legal { padding-block: calc(var(--tab-h) + 4rem) 6rem; }
+  .legal__inner { max-width: 72ch; }
+  h1 { font-size: var(--step-3); color: var(--navy); margin-bottom: 2.5rem; }
+  .legal__body :global(h2) { font-size: var(--step-1); color: var(--navy); margin: 2.5rem 0 .75rem; }
+  .legal__body :global(p), .legal__body :global(li) { color: var(--ink-soft); margin-bottom: .75rem; }
+  .legal__body :global(.pending) { background: rgba(254,183,7,.35); color: var(--navy); font-weight: 600; padding: 0 .25em; }
+</style>

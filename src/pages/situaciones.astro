@@ -1,0 +1,52 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { SITUACIONES, SERVICIOS } from "../data/site";
+const nombre = (slug: string) => SERVICIOS.find((s) => s.slug === slug)!;
+---
+<Base
+  title="Problemas habituales en pymes y cómo resolverlos"
+  description="Facturar sin beneficio, una empresa que depende del dueño, conflictos entre socios, un equipo que no responde… Situaciones reales de pymes y cómo las ordenamos en Arcansi."
+>
+  <PageHero title="Situaciones que vemos cada semana" lomo="Situaciones" crumbs={[{ href: "/situaciones/", label: "Situaciones" }]}>
+    <p>No eres el único. Son más comunes de lo que crees, y todas tienen solución.</p>
+  </PageHero>
+
+  <section class="section field-paper">
+    <div class="wrap cases">
+      {SITUACIONES.map((s) => (
+        <article class="case" id={s.id}>
+          <div class="folio case__sheet reveal">
+            <h2>{s.titulo}</h2>
+            <ul>{s.puntos.map((p) => <li>{p}</li>)}</ul>
+          </div>
+          <div class="case__answer reveal">
+            <span class="rubber" data-stamp="-5">Tiene solución</span>
+            <p>{s.respuesta}</p>
+            <p class="case__svc">
+              {s.servicios.map((x, i) => (<>{i > 0 && " · "}<a href={`/servicios/${x}/`}>{nombre(x).nombre}</a></>))}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+
+<style>
+  .cases { display: grid; gap: clamp(4rem, 8vw, 7rem); }
+  .case { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; scroll-margin-top: calc(var(--tab-h) + 2rem); }
+  .case:nth-child(2n) .case__sheet { order: 2; transform: rotate(1.2deg); }
+  .case__sheet { transform: rotate(-1.2deg); }
+  .case__sheet h2 { font-size: var(--step-2); color: var(--navy); margin-bottom: 1rem; }
+  .case__sheet ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .55rem; color: var(--ink-soft); }
+  .case__sheet li::marker { color: var(--gold-press); }
+  .case__answer { display: grid; gap: 1.25rem; justify-items: start; }
+  .case__answer p { font-size: var(--step-1); line-height: 1.5; max-width: 40ch; }
+  .case__answer .rubber { font-size: 1.2rem; }
+  .case__svc { font-size: var(--step-0) !important; font-weight: 600; }
+  .case__svc a { color: var(--navy); }
+  @media (max-width: 820px) { .case { grid-template-columns: 1fr; } .case:nth-child(2n) .case__sheet { order: 0; } }
+</style>

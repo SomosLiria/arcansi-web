@@ -1,0 +1,28 @@
+---
+// Redibujo vectorial del símbolo de Arcansi (A + arco + aguja de brújula).
+// tone="light" para campos azul marino, tone="dark" para papel.
+interface Props { tone?: "light" | "dark"; class?: string; }
+const { tone = "dark", class: cls = "" } = Astro.props;
+const ink = tone === "light" ? "#FFFFFF" : "#001C43";
+const id = `m${Math.random().toString(36).slice(2, 8)}`;
+---
+<svg class={`logo-mark ${cls}`} viewBox="60 10 440 590" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id={id} maskUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="560" height="600" fill="#fff" />
+      <circle cx="272" cy="378" r="150" fill="none" stroke="#000" stroke-width="80" />
+    </mask>
+  </defs>
+  <g mask={`url(#${id})`} stroke={ink} stroke-width="46">
+    <line x1="280" y1="28" x2="96" y2="560" />
+    <line x1="280" y1="28" x2="464" y2="560" />
+  </g>
+  <path d="M 172 494 A 150 150 0 1 1 384 262" fill="none" stroke={ink} stroke-width="30" />
+  <path d="M 418 340 A 150 150 0 0 1 312 524" fill="none" stroke={ink} stroke-width="30" />
+  <polygon points="118,582 266,368 300,398" fill={ink} />
+  <polygon points="262,366 458,180 304,402" fill="#FEB707" />
+  <circle cx="283" cy="383" r="22" fill="#FFFFFF" stroke={ink} stroke-width="7" />
+</svg>
+<style>
+  .logo-mark { display: block; height: auto; }
+</style>

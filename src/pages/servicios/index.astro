@@ -1,0 +1,53 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import { SERVICIOS, COLABORADORES } from "../../data/site";
+---
+<Base
+  title="Servicios de consultoría para pymes"
+  description="Organización, control financiero, dirección, producción, compras y estrategia comercial. Servicios de consultoría pragmática para pymes de toda España, a medida y sin paquetes cerrados."
+>
+  <PageHero title="Servicios de consultoría para pymes" lomo="Servicios" crumbs={[{ href: "/servicios/", label: "Servicios" }]}>
+    <p>Cada empresa es diferente. No vendemos paquetes cerrados ni soluciones mágicas: trabajamos sobre lo que de verdad necesitas.</p>
+  </PageHero>
+
+  <section class="section field-paper">
+    <div class="wrap">
+      <ol class="index">
+        {SERVICIOS.map((s) => (
+          <li class="index__item reveal">
+            <a href={`/servicios/${s.slug}/`} class="index__link">
+              <span class="index__tab label" aria-hidden="true">{s.lomo}</span>
+              <span class="index__body">
+                <span class="index__name">{s.nombre}</span>
+                <span class="index__sum">{s.resumen}</span>
+              </span>
+              <svg class="index__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <div class="aux reveal">
+        <h2 class="label">Con colaboradores especializados</h2>
+        <p>Cuando el caso lo pide, sumamos expertos de confianza en {COLABORADORES.join(", ").toLowerCase()}.</p>
+      </div>
+    </div>
+  </section>
+  <CtaBand title="¿No sabes por dónde empezar?" text="Es lo normal. Cuéntanos qué pasa en tu empresa y te diremos con sinceridad qué tocaríamos primero." />
+</Base>
+
+<style>
+  .index { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--navy); }
+  .index__link { display: grid; grid-template-columns: 9rem 1fr auto; gap: 2rem; align-items: center; padding: 2rem 0; text-decoration: none; border-bottom: 1px solid var(--paper-edge);
+    transition: padding .4s var(--ease-out), background-color .3s; }
+  .index__tab { align-self: stretch; display: grid; place-items: center; background: var(--navy); color: var(--gold); font-size: 1.05rem; border-radius: 6px 0 0 6px; padding: .8rem; }
+  .index__name { display: block; font-size: var(--step-2); font-weight: 800; letter-spacing: -.025em; color: var(--navy); line-height: 1.1; }
+  .index__sum { display: block; margin-top: .5rem; color: var(--ink-soft); max-width: 60ch; }
+  .index__arrow { width: 2rem; height: 2rem; color: var(--navy); transition: transform .4s var(--ease-out); }
+  .index__link:hover { padding-left: 1rem; background: #fff; }
+  .index__link:hover .index__arrow { transform: translateX(6px); color: var(--gold-press); }
+  .aux { margin-top: 4rem; max-width: 60ch; }
+  .aux h2 { color: var(--navy); font-size: 1.2rem; margin-bottom: .6rem; }
+  @media (max-width: 680px) { .index__link { grid-template-columns: 1fr auto; } .index__tab { grid-column: 1 / -1; justify-self: start; border-radius: 6px 6px 0 0; } }
+</style>

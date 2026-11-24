@@ -1,0 +1,65 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHero from "../components/PageHero.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { ANALISIS, CONSULTORIA, PRINCIPIOS } from "../data/site";
+const fases = [
+  { nombre: "Análisis", sub: "Comprender antes de actuar.", pasos: ANALISIS },
+  { nombre: "Consultoría", sub: "Con el diagnóstico claro, pasamos a la acción con un plan hecho a medida.", pasos: CONSULTORIA },
+];
+---
+<Base
+  title="Metodología de consultoría para pymes: de la escucha a la acción"
+  description="Cómo trabajamos en Arcansi: escuchamos, estudiamos, entregamos un diagnóstico por escrito y, si podemos ayudarte, actuamos contigo y formamos a tu equipo para que no nos necesites."
+>
+  <PageHero title="De la escucha a la acción" lomo="Metodología" crumbs={[{ href: "/metodologia/", label: "Metodología" }]}>
+    <p>Sin informes de cien páginas ni diagnósticos interminables. Directos al grano, paso a paso, codo a codo contigo.</p>
+  </PageHero>
+
+  {fases.map((f, fi) => (
+    <section class={`section ${fi === 0 ? "field-paper" : "field-navy"} phase`}>
+      <div class="wrap">
+        <header class="phase__head reveal">
+          <h2>{f.nombre}</h2>
+          <p class="lede">{f.sub}</p>
+        </header>
+        <ol class="phase__line">
+          {f.pasos.map((e, i) => (
+            <li class="phase__step">
+              <div class="folio reveal">
+                <h3>{e.titulo}</h3>
+                <p>{e.texto}</p>
+              </div>
+              <span class="rubber phase__stamp" data-stamp={i % 2 ? "6" : "-6"}>{e.sello}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  ))}
+
+  <section class="section field-paper">
+    <div class="wrap">
+      <p class="principles reveal">{PRINCIPIOS.map((p) => <span>{p}</span>)}</p>
+      <p class="goal reveal">Nuestro trabajo termina cuando tu empresa tiene el orden necesario para funcionar de forma profesional, rentable y sin depender necesariamente de ti.</p>
+    </div>
+  </section>
+  <CtaBand title="El primer paso es escucharte" />
+</Base>
+
+<style>
+  .phase__head { margin-bottom: 3rem; display: grid; gap: 1rem; }
+  .phase__head h2 { font-size: var(--step-3); }
+  .field-paper .phase__head h2 { color: var(--navy); }
+  .field-navy .phase__head h2 { color: #fff; }
+  .phase__line { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.5rem; position: relative; }
+  .phase__step { display: grid; grid-template-columns: minmax(0, 46rem) auto; align-items: center; gap: 2rem; }
+  .phase__step:nth-child(2n) { margin-left: clamp(0rem, 8vw, 8rem); }
+  .phase__step h3 { font-size: var(--step-2); color: var(--navy); margin-bottom: .6rem; }
+  .phase__step p { color: var(--ink-soft); font-size: var(--step-0); max-width: 58ch; }
+  .phase__stamp { font-size: 1.35rem; padding: .6rem 1rem; }
+  .principles { display: flex; flex-wrap: wrap; gap: .5rem 0; font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: var(--step-1); color: var(--navy); }
+  .principles span:not(:last-child)::after { content: ""; display: inline-block; width: .45em; height: .45em; border-radius: 50%; background: var(--gold); margin: 0 1rem; vertical-align: .18em; }
+  .goal { margin-top: 2.5rem; font-size: var(--step-2); font-weight: 800; letter-spacing: -.025em; line-height: 1.15; color: var(--navy); max-width: 30ch; }
+  @media (max-width: 760px) { .phase__step { grid-template-columns: 1fr; } .phase__step:nth-child(2n) { margin-left: 0; } .phase__stamp { justify-self: end; margin-top: -1rem; } }
+</style>
