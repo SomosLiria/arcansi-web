@@ -76,13 +76,13 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
     // El desorden vive a la derecha y en los bordes: el titular (izquierda) queda limpio.
     const right = true;
     const cx = isSmall
-      ? rand(1.7, 3.4)
+      ? rand(1.35, 2.7)
       : (right ? rand(2.6, 7) : rand(-7.5, -4));
     const cy = isSmall
       ? (right ? rand(-1.5, 5.5) : rand(-5.5, -3.5))
       : (right ? rand(-3, 3) : (Math.random() < .5 ? rand(2.4, 3.2) : rand(-3.4, -2.6)));
     const chaos = {
-      pos: new THREE.Vector3(cx, cy, right ? rand(-2.5, 1.5) : rand(-7, -5)),
+      pos: new THREE.Vector3(cx, cy, isSmall ? rand(-4, -0.5) : rand(-2.5, 1.5)),
       rot: new THREE.Euler(rand(-1.2, 1.2), rand(-1.4, 1.4), rand(-1.6, 1.6)),
     };
     const order = {

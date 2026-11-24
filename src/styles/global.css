@@ -71,7 +71,8 @@ a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px
 .field-navy { background: var(--navy); color: var(--on-navy); }
 .field-gold { background: var(--gold); color: var(--navy); }
 .field-paper { background: var(--paper); color: var(--ink); }
-.section { padding-block: clamp(5rem, 12vw, 10rem) clamp(4rem, 9vw, 8rem); position: relative; }
+.section { padding-block: clamp(5rem, 12vw, 10rem) clamp(4rem, 9vw, 8rem); position: relative; overflow-x: clip; }
+main { overflow-x: clip; }
 .lede { font-size: var(--step-1); line-height: 1.45; max-width: 38ch; }
 .measure { max-width: 66ch; }
 .field-navy .muted { color: var(--on-navy-soft); }
