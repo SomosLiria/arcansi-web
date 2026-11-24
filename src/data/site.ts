@@ -4,7 +4,7 @@ export const SITE = {
   email: "consultoria@arcansi.com",
   tagline: "Consultoría empresarial pragmática para pymes",
   description:
-    "Consultoría empresarial pragmática para dirigentes de pymes de toda España. Ordenamos tu empresa: estructura, finanzas, procesos, compras y ventas, para que no dependa todo de ti.",
+    "Consultoría empresarial para pymes de toda España. Ordenamos estructura, finanzas, procesos, compras y ventas para que tu empresa no dependa todo de ti.",
   builder: { name: "liriacrea.com", url: "https://liriacrea.com" },
 };
 
@@ -115,9 +115,9 @@ export const SERVICIOS: Servicio[] = [
     slug: "organizacion-empresarial",
     nombre: "Organización y estructura",
     lomo: "Organización",
-    seoTitle: "Organización empresarial para pymes: organigrama y funciones",
+    seoTitle: "Organización empresarial para pymes",
     seoDescription:
-      "Organigramas y fichas de puesto reales para pymes. Definimos quién hace qué, cómo y cuándo, y montamos una delegación efectiva para que la empresa no dependa de ti.",
+      "Organigramas y fichas de puesto reales para pymes. Definimos quién hace qué y montamos una delegación efectiva para que la empresa no dependa de ti.",
     resumen:
       "Organigramas y fichas de puesto reales. Quién hace qué, cómo y cuándo, para que no tengas que recordarlo todo cada día.",
     intro: [
@@ -139,7 +139,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "control-financiero",
     nombre: "Control financiero",
     lomo: "Finanzas",
-    seoTitle: "Control financiero para pymes: márgenes, tesorería y cuadro de mando",
+    seoTitle: "Control financiero para pymes",
     seoDescription:
       "Cuadro de mando financiero que entiendas, control de márgenes reales por producto o servicio y previsiones de tesorería para pymes de toda España.",
     resumen:
@@ -163,7 +163,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "gestion-y-direccion",
     nombre: "Gestión y dirección",
     lomo: "Dirección",
-    seoTitle: "Dirección estratégica para pymes: planificación y KPIs",
+    seoTitle: "Dirección estratégica y KPIs para pymes",
     seoDescription:
       "Planificación estratégica anual, reuniones ejecutivas cortas y útiles e indicadores de gestión (KPIs) para que dirijas tu pyme con criterio económico.",
     resumen:
@@ -187,7 +187,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "procesos-de-produccion",
     nombre: "Procesos de producción",
     lomo: "Producción",
-    seoTitle: "Mejora de procesos de producción en pymes: tiempos, calidad y costes",
+    seoTitle: "Mejora de procesos de producción en pymes",
     seoDescription:
       "Análisis de cuellos de botella, estandarización de la calidad y optimización de tiempos de entrega para que el margen no se escape en la fábrica o el taller.",
     resumen:
@@ -211,7 +211,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "logistica-y-compras",
     nombre: "Logística y compras",
     lomo: "Compras",
-    seoTitle: "Gestión de compras y stock para pymes: proveedores y almacén",
+    seoTitle: "Gestión de compras y stock para pymes",
     seoDescription:
       "Negociación y gestión de proveedores, optimización del nivel de stock y análisis de la cadena de suministro para pymes. Sin dinero parado en el almacén.",
     resumen:
@@ -235,7 +235,7 @@ export const SERVICIOS: Servicio[] = [
     slug: "estrategia-comercial",
     nombre: "Estrategia comercial",
     lomo: "Comercial",
-    seoTitle: "Estrategia comercial para pymes: precios, ventas y clientes clave",
+    seoTitle: "Estrategia comercial y precios para pymes",
     seoDescription:
       "Política de precios y descuentos, sistematización de ventas y fidelización de cuentas clave. Menos humo y más margen para tu pyme.",
     resumen:

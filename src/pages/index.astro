@@ -16,6 +16,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
       <span class="spine__ring"></span>
       <span class="spine__label">Tu empresa, en orden</span>
     </div>
+    <span class="rubber hero__seal" aria-hidden="true">En orden</span>
     <div class="wrap hero__inner">
       <h1 id="hero-title" class="hero__title">Ordenamos tu empresa para que no dependa todo de&nbsp;ti.</h1>
       <p class="hero__what">Consultoría empresarial para pymes de toda España</p>
@@ -179,6 +180,14 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
     "requestIdleCallback" in window ? (window as any).requestIdleCallback(go, { timeout: 900 }) : setTimeout(go, 300);
   }
 
+  // Entrada de portada: el texto se asienta con un leve desenfoque (ya visible por defecto)
+  if (!reduce) {
+    gsap.from([".hero__title", ".hero__what", ".hero__sub", ".hero__actions", ".hero__index li"], {
+      y: 26, filter: "blur(6px)", duration: 1.2, ease: "expo.out", stagger: 0.07, delay: 0.05, clearProps: "filter",
+    });
+    gsap.from(".hero__spine", { yPercent: 18, duration: 1.6, ease: "expo.out", delay: 0.15 });
+  }
+
   // Folios que caen sobre la mesa y se asientan
   if (!reduce) {
     gsap.from(".desk__sheet", {
@@ -199,7 +208,9 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .field-navy .head h2 { color: #fff; }
 
   /* ── Portada ── */
-  .hero { position: relative; min-height: 100svh; overflow: hidden; display: grid; grid-template-rows: 1fr auto; isolation: isolate; }
+  .hero { position: relative; min-height: 100svh; overflow: hidden; display: grid; grid-template-rows: 1fr auto; isolation: isolate;
+    background-image: var(--grain), radial-gradient(55% 75% at 76% 46%, #0B3170 0%, rgba(11,49,112,.35) 45%, rgba(0,28,67,0) 75%);
+    background-size: 220px, auto; background-blend-mode: soft-light, normal; }
   .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
   .hero__inner { align-self: center; padding-block: calc(var(--tab-h) + 2.5rem) 2.5rem; }
   .hero__what { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: clamp(1rem, .9rem + .4vw, 1.25rem); color: var(--gold); margin-top: 1.4rem; }
@@ -216,6 +227,12 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
     border-left: 1px solid rgba(233,238,246,.1); transition: background-color .25s, color .25s; }
   .hero__index li:first-child a { border-left: 0; }
   .hero__index a:hover { background: var(--gold); color: var(--navy); }
+  /* Sello final del archivado: se estampa al terminar (--p lo fija ScrollTrigger) */
+  .hero .hero__seal { --k: clamp(0, (var(--p, 0) - .86) * 8, 1);
+    position: absolute; right: clamp(10rem, 19vw, 19rem); top: 58%; z-index: 1; width: max-content; justify-self: end; align-self: start; font-size: clamp(1.3rem, 1.8vw, 1.8rem); padding: .6rem 1.1rem;
+    color: var(--navy-lift); border-width: 3px; background: rgba(207,162,62,.22); mix-blend-mode: multiply;
+    opacity: var(--k); transform: rotate(-9deg) scale(calc(1.8 - var(--k) * .8)); pointer-events: none; }
+  @media (max-width: 760px) { .hero__seal { display: none; } }
   .hero__spine { position: absolute; right: clamp(.75rem, 3vw, 3rem); bottom: 0; top: 18%; width: clamp(64px, 7vw, 104px); z-index: -1; border-radius: 6px 6px 0 0; }
   .hero__spine .spine__label { font-size: clamp(.9rem, 1.2vw, 1.15rem); padding: 1.4rem .6rem; }
   @media (max-width: 760px) {
@@ -230,7 +247,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 
   /* ── Servicios ── */
   .svcs__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem 1.5rem; }
-  .svcs__card { padding-top: 2.25rem; }
+  .svcs__card { padding-top: 2.25rem; box-shadow: 0 0 0 1px rgba(0,28,67,.06), 0 1px 0 #E9E9E4, 0 2px 0 #FBFBF9, 0 3px 0 #E4E4DF, 0 14px 30px -16px rgba(0,28,67,.3); }
   .svcs__tab { position: absolute; top: -1.9rem; left: 1.4rem; background: var(--navy); color: var(--gold);
     padding: .6rem .9rem .5rem; border-radius: 6px 6px 0 0; font-size: .95rem; }
   .svcs__card h3 { font-size: var(--step-1); letter-spacing: -.015em; margin-bottom: .6rem; }

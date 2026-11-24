@@ -70,6 +70,24 @@ a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px
 .wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
 .field-navy { background: var(--navy); color: var(--on-navy); }
 .field-gold { background: var(--gold); color: var(--navy); }
+
+/* Grano de papel: textura táctil muy sutil sobre los campos de tinta y papel */
+:root {
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 .1 0 0 0 0 .26 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.field-navy, .field-deep, .foot { background-image: var(--grain); background-size: 220px; background-blend-mode: soft-light; }
+.field-paper { background-image: var(--grain-dark); background-size: 220px; background-blend-mode: multiply; }
+
+/* Enlaces de texto: subrayado que se dibuja */
+main p a, .muted a { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat; transition: background-size .45s var(--ease-out); }
+main p a:hover, .muted a:hover { background-size: 0 1px; background-position: 100% 100%; }
+
+/* Barra de desplazamiento en los colores de la marca */
+::-webkit-scrollbar { width: 11px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--navy-lift); border: 3px solid var(--paper); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--navy); }
 .field-deep { background: var(--navy-deep); color: var(--on-navy); }
 .field-paper { background: var(--paper); color: var(--ink); }
 .section { padding-block: clamp(5rem, 12vw, 10rem) clamp(4rem, 9vw, 8rem); position: relative; overflow-x: clip; }

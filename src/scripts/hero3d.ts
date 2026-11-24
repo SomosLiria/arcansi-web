@@ -51,10 +51,11 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
   camera.position.set(0, 0, 12);
 
-  scene.add(new THREE.AmbientLight(0xdfe6f2, 1.25));
+  scene.fog = new THREE.Fog(0x001c43, 11, 21);
+  scene.add(new THREE.AmbientLight(0xdfe6f2, 1.1));
   const key = new THREE.DirectionalLight(0xffffff, 2.1);
   key.position.set(-4, 6, 8); scene.add(key);
-  const warm = new THREE.DirectionalLight(0xfeb707, 0.55);
+  const warm = new THREE.DirectionalLight(0xcfa23e, 0.45);
   warm.position.set(6, -3, 4); scene.add(warm);
 
   const geo = new THREE.PlaneGeometry(1.5, 1.95, 1, 10);
@@ -69,7 +70,7 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
   // Destino ordenado: pila dentro del archivador (borde derecho)
-  const stackX = isSmall ? 1.9 : 4.6;
+  const stackX = isSmall ? 1.45 : 2.85;
   for (let i = 0; i < count; i++) {
     const mat = new THREE.MeshStandardMaterial({ map: textures[i % textures.length], roughness: 0.92, metalness: 0, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geo, mat);
@@ -87,10 +88,11 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
       pos: new THREE.Vector3(cx, cy, layer),
       rot: new THREE.Euler(rand(-0.22, 0.22), rand(-0.28, 0.28), rand(-1.4, 1.4)),
     };
-    // Destino: pila de canto dentro del archivador; la separación va en la dirección de la normal
+    // Destino: una pila de folios cuadrada, de frente, junto al archivador.
+    // Separación mínima en la normal y un leve desalineado, como papel real bien apilado.
     const order = {
-      pos: new THREE.Vector3(stackX + i * 0.03, -0.1, -0.6),
-      rot: new THREE.Euler(-0.08, -1.32, 0),
+      pos: new THREE.Vector3(stackX + rand(-0.015, 0.015), -0.55 + i * 0.011, 2.1 + i * 0.03),
+      rot: new THREE.Euler(-0.42, -0.34, -0.06 + rand(-0.012, 0.012)),
     };
     mesh.position.copy(chaos.pos); mesh.rotation.copy(chaos.rot);
     scene.add(mesh);
@@ -143,6 +145,15 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
     camera.lookAt(0, 0, 0);
     renderer.render(scene, camera);
   };
+
+  // Revisión: ?p=0..1 congela la escena en ese punto del archivado
+  const forced = new URLSearchParams(location.search).get("p");
+  if (forced !== null) {
+    state.progress = Number(forced);
+    section.style.setProperty("--p", forced);
+    gsap.ticker.add(render);
+    return;
+  }
 
   if (opts.reduce) {
     state.progress = 0;

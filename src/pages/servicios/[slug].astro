@@ -12,7 +12,31 @@ const url = `${SITE.url}/servicios/${s.slug}/`;
 const relacionadas = SITUACIONES.filter((x) => x.servicios.includes(s.slug));
 const otros = SERVICIOS.filter((x) => x.slug !== s.slug);
 
+const faq = [
+  {
+    q: `¿Para qué empresas es el servicio de ${s.nombre.toLowerCase()}?`,
+    a: `Para pymes de cualquier sector (industria, taller, servicios o comercio) cuyo dirigente reconoce situaciones como esta: «${s.senales[0]}» Si te pasa, probablemente podamos ayudarte.`,
+  },
+  {
+    q: "¿Trabajáis con empresas de toda España?",
+    a: "Sí. Trabajamos con pymes de toda España, combinando el trabajo en tu empresa con el que hacemos desde nuestro despacho.",
+  },
+  {
+    q: "¿Cómo empezamos?",
+    a: "Nos cuentas tu situación sin compromiso. Escuchamos, estudiamos tu empresa y te entregamos un diagnóstico por escrito. Solo si creemos que podemos ayudarte te presentamos una propuesta.",
+  },
+  {
+    q: "¿Cuándo termina vuestra colaboración?",
+    a: "Cuando tú decidas. Nuestro objetivo es que tu equipo y tú podáis seguir solos; si lo pides, hacemos un seguimiento para consolidar el cambio.",
+  },
+];
+
 const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  },
   {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -84,6 +108,20 @@ const schema = [
     </div>
   </section>
 
+  <section class="section field-paper faq" aria-labelledby="faq-t">
+    <div class="wrap faq__inner">
+      <h2 id="faq-t" class="faq__title reveal">Preguntas frecuentes</h2>
+      <div class="faq__list">
+        {faq.map((f) => (
+          <details class="faq__item">
+            <summary>{f.q}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <CtaBand title={`¿Hablamos de ${s.nombre.toLowerCase()}?`} />
 
   <section class="section field-paper others" aria-labelledby="otros">
@@ -117,6 +155,18 @@ const schema = [
   .how__steps .label { display: block; color: var(--navy); font-size: 1.3rem; margin-bottom: .5rem; padding-top: .9rem; border-top: 3px solid var(--gold); }
   .how__steps p { color: var(--ink-soft); font-size: .98rem; }
   .how__link { display: inline-block; margin-top: 2.5rem; font-weight: 700; color: var(--navy); }
+  .faq { padding-top: 0; }
+  .faq__inner { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem 4rem; }
+  .faq__title { font-size: var(--step-2); color: var(--navy); }
+  .faq__item { border-top: 1px solid var(--paper-edge); }
+  .faq__item:last-child { border-bottom: 1px solid var(--paper-edge); }
+  .faq__item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 1.5rem; align-items: center;
+    padding: 1.3rem 0; font-weight: 700; font-size: var(--step-1); color: var(--navy); letter-spacing: -.01em; }
+  .faq__item summary::-webkit-details-marker { display: none; }
+  .faq__item summary svg { width: 1.3rem; height: 1.3rem; flex: 0 0 auto; color: var(--gold-press); transition: transform .35s var(--ease-out); }
+  .faq__item[open] summary svg { transform: rotate(45deg); }
+  .faq__item p { padding: 0 0 1.4rem; max-width: 62ch; color: var(--ink-soft); }
+  @media (max-width: 800px) { .faq__inner { grid-template-columns: 1fr; } }
   .others { padding-block: 4rem 0; overflow: hidden; }
   .others__t { color: var(--navy); font-size: 1.2rem; margin-bottom: 1.5rem; }
   .others__row { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; align-items: flex-end; }
