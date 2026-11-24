@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import ContactForm from "../components/ContactForm.astro";
+import Logo from "../components/Logo.astro";
 import { SITE, SITUACIONES, SERVICIOS, COLABORADORES, ANALISIS, CONSULTORIA, PRINCIPIOS, VALORES } from "../data/site";
 
 const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
@@ -122,7 +123,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
             <li class="station folio">
               <h4>{e.titulo}</h4>
               <p>{e.texto}</p>
-              <span class="rubber station__stamp" data-stamp={i % 2 ? "5" : "-7"}>{e.sello}</span>
+              <span class="rubber rubber--ink station__stamp" data-stamp={i % 2 ? "5" : "-7"}>{e.sello}</span>
             </li>
           ))}
         </ol>
@@ -138,7 +139,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
             <li class="station folio">
               <h4>{e.titulo}</h4>
               <p>{e.texto}</p>
-              <span class="rubber station__stamp" data-stamp={i % 2 ? "6" : "-5"}>{e.sello}</span>
+              <span class="rubber rubber--ink station__stamp" data-stamp={i % 2 ? "6" : "-5"}>{e.sello}</span>
             </li>
           ))}
         </ol>
@@ -152,12 +153,21 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 
   <!-- ═══ SOBRE ARCANSI ═══ -->
   <section class="section field-deep about" id="sobre-arcansi" aria-labelledby="about-title">
+    <div class="about__mark" aria-hidden="true"><Logo tone="light" /></div>
     <div class="wrap about__grid">
-      <h2 id="about-title" class="about__title reveal">No somos teóricos de sistemas empresariales ni fans del Power&nbsp;Point. <em>Somos empresarios.</em></h2>
+      <div>
+        <h2 id="about-title" class="about__title reveal">No somos teóricos de sistemas empresariales ni fans del Power&nbsp;Point.
+          <em>Somos empresarios.<svg class="about__scribble" viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true"><path d="M3 15 C 70 6, 140 20, 210 11 S 330 6, 397 13" /></svg></em>
+        </h2>
+        <ul class="about__disc reveal" aria-label="Experiencia del equipo">
+          <li>Ingeniería</li><li>Finanzas</li><li>Ventas y marketing</li><li>Dirección de empresas</li>
+        </ul>
+      </div>
       <div class="about__body">
         <p class="reveal">Consultor y colaboradores tenemos experiencia real dirigiendo empresas. Conocemos la presión de las nóminas, lo difícil que es delegar y la sensación de que, si no estás encima de todo, las cosas no salen.</p>
         <p class="reveal">Aportamos la visión externa, fría y pragmática que el día a día no te deja ver. Somos ingenieros, sabemos de finanzas y tenemos mucha experiencia comercial. Analizamos tus números sin filtros, ordenamos tus procesos y te hablamos claro.</p>
         <div class="folio about__card reveal">
+          <svg class="about__clip" viewBox="0 0 24 60" aria-hidden="true"><path d="M7 14 V44 a5 5 0 0 0 10 0 V9 a8 8 0 0 0 -16 0 V46 a11 11 0 0 0 22 0 V16" fill="none" stroke="#9AA3AE" stroke-width="2.4" stroke-linecap="round"/></svg>
           <p class="label about__cardtab">Ficha · Lo que no negociamos</p>
           <ul class="checks">
             {VALORES.map((v) => (
@@ -204,6 +214,17 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
       y: 26, filter: "blur(6px)", duration: 1.2, ease: "expo.out", stagger: 0.07, delay: 0.05, clearProps: "filter",
     });
     gsap.from(".hero__spine", { yPercent: 18, duration: 1.6, ease: "expo.out", delay: 0.15 });
+  }
+
+  // Sobre Arcansi: subrayado que se dibuja y marca de agua que gira con el scroll
+  if (!reduce) {
+    const path = document.querySelector<SVGPathElement>(".about__scribble path");
+    if (path) {
+      gsap.fromTo(path, { strokeDashoffset: 420 }, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut",
+        scrollTrigger: { trigger: ".about__title", start: "top 70%" } });
+    }
+    gsap.fromTo(".about__mark", { rotate: -14 }, { rotate: 10, ease: "none",
+      scrollTrigger: { trigger: ".about", start: "top bottom", end: "bottom top", scrub: 1 } });
   }
 
   // Folios de situaciones: botón para darles la vuelta (táctil y teclado)
@@ -359,7 +380,13 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .station { padding-bottom: 4.5rem; }
   .station h4 { font-size: var(--step-1); color: var(--navy); margin-bottom: .6rem; }
   .station p { font-size: .98rem; color: var(--ink-soft); }
-  .station__stamp { position: absolute; right: 1rem; bottom: 1.1rem; }
+  .station__stamp { position: absolute; right: .9rem; bottom: 1.1rem; }
+  .station:nth-child(even) .rubber--ink { color: var(--navy-lift); }
+  .station { transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out); }
+  .station:hover { transform: translateY(-6px) rotate(-.4deg); box-shadow: 0 1px 1px rgba(0,28,67,.06), 0 26px 40px -20px rgba(0,28,67,.45); }
+  .station:hover .station__stamp { animation: rethump .5s cubic-bezier(.6,0,.4,1); }
+  @keyframes rethump { 0% { scale: 1; } 30% { scale: 1.32; opacity: .55; } 62% { scale: .93; opacity: 1; } 100% { scale: 1; } }
+  @media (prefers-reduced-motion: reduce) { .station:hover .station__stamp { animation: none; } }
   .principles { display: flex; flex-wrap: wrap; gap: .5rem 0; font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: var(--step-1); color: var(--navy); }
   .principles span:not(:last-child)::after { content: ""; display: inline-block; width: .45em; height: .45em; border-radius: 50%; background: var(--gold); margin: 0 1rem; vertical-align: .18em; }
   @media (max-width: 1080px) { .method__block { grid-template-columns: 1fr; } .method__track { grid-template-columns: repeat(2, 1fr); } }
@@ -376,7 +403,18 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   /* ── Sobre ── */
   .about__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(2.5rem, 6vw, 6rem); align-items: start; }
   .about__title { font-size: var(--step-3); color: #fff; }
-  .about__title em { font-style: normal; color: var(--gold); display: block; margin-top: .3em; }
+  .about { overflow: hidden; }
+  .about__grid { position: relative; z-index: 1; }
+  .about__title { font-size: clamp(2.2rem, 1.5rem + 2.6vw, 3.7rem); }
+  .about__title em { font-style: normal; color: var(--gold); display: inline-block; margin-top: .3em; position: relative; }
+  .about__scribble { position: absolute; left: -2%; bottom: -.32em; width: 104%; height: .45em; overflow: visible; }
+  .about__scribble path { fill: none; stroke: var(--gold); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 420; stroke-dashoffset: var(--draw, 0); }
+  .about__mark { position: absolute; right: -6vw; top: 50%; width: min(46vw, 640px); translate: 0 -50%; opacity: .05; pointer-events: none; }
+  .about__disc { list-style: none; margin: 2.75rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .6rem; }
+  .about__disc li { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 1.02rem;
+    color: var(--on-navy); padding: .55rem .9rem .5rem; border: 1.5px solid rgba(207,162,62,.55); border-radius: 999px; transition: background-color .3s, color .3s; }
+  .about__disc li:hover { background: var(--gold); color: var(--navy); }
+  .about__clip { position: absolute; right: 2.2rem; top: -1.6rem; width: 18px; height: 46px; transform: rotate(8deg); }
   .about__body { display: grid; gap: 1.5rem; color: var(--on-navy); }
   .about__link { color: var(--gold); font-weight: 700; }
   .about__card { transform: rotate(-1.2deg); margin-top: 2.25rem; }

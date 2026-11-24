@@ -22,7 +22,7 @@ const nombre = (slug: string) => SERVICIOS.find((s) => s.slug === slug)!;
             <ul>{s.puntos.map((p) => <li>{p}</li>)}</ul>
           </div>
           <div class="case__answer reveal">
-            <span class="rubber" data-stamp="-5">Tiene solución</span>
+            <span class="rubber rubber--ink" data-stamp="-5">Tiene solución</span>
             <p>{s.respuesta}</p>
             <p class="case__svc">
               {s.servicios.map((x, i) => (<>{i > 0 && " · "}<a href={`/servicios/${x}/`}>{nombre(x).nombre}</a></>))}
