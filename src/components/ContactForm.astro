@@ -80,7 +80,8 @@
           show("ok", "Mensaje recibido. Te escribiremos personalmente muy pronto.");
           const seal = form.querySelector<HTMLElement>(".cform__seal")!;
           seal.hidden = false;
-          seal.animate([{ transform: "rotate(-18deg) scale(1.9)", opacity: 0.2 }, { transform: "rotate(-9deg) scale(1)", opacity: 0.92 }],
+          if (matchMedia("(prefers-reduced-motion: reduce)").matches) seal.style.opacity = ".92";
+          else seal.animate([{ transform: "rotate(-18deg) scale(1.9)", opacity: 0.2 }, { transform: "rotate(-9deg) scale(1)", opacity: 0.92 }],
             { duration: 380, easing: "cubic-bezier(.7,0,.84,0)", fill: "forwards" });
           form.reset(); csrf.value = token();
         } else {
