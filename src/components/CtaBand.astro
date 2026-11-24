@@ -5,13 +5,13 @@ const {
   text = "Cuéntanos tu situación sin compromiso. Si creemos que podemos ayudarte, te lo diremos. Si no, también.",
 } = Astro.props;
 ---
-<section class="cta field-gold">
+<section class="cta field-deep">
   <div class="wrap cta__inner">
     <div>
       <h2 class="cta__title">{title}</h2>
       <p class="cta__text">{text}</p>
     </div>
-    <a href="/contacto/" class="stamp" style="--s-bg: var(--navy); --s-ink: var(--gold);">
+    <a href="/contacto/" class="stamp">
       Cuéntanos tu situación
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
@@ -20,6 +20,6 @@ const {
 <style>
   .cta { padding-block: clamp(4rem, 8vw, 6.5rem); }
   .cta__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2rem 3rem; }
-  .cta__title { font-size: var(--step-3); letter-spacing: -.035em; }
+  .cta__title { font-size: var(--step-3); letter-spacing: -.035em; color: #fff; }
   .cta__text { margin-top: 1rem; max-width: 48ch; font-size: var(--step-1); line-height: 1.45; }
 </style>

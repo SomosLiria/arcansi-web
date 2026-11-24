@@ -5,8 +5,8 @@ colors:
   navy: "#001C43"
   navy-deep: "#00112B"
   navy-lift: "#0A2A5C"
-  gold: "#FEB707"
-  gold-press: "#E5A300"
+  gold: "#CFA23E"
+  gold-press: "#B08728"
   paper: "#F4F4F1"
   paper-edge: "#E4E4DF"
   folio-white: "#FBFBF9"
@@ -154,8 +154,8 @@ Dos tintas planas fijas de marca sobre papel y cartón; el resto son variaciones
 - **Marino de cartón** (#0A2A5C): cuerpo de los lomos AZ y tinta del sello de caucho sobre papel. Los lomos alternan #0D3270 y #062559 para que la balda no sea uniforme.
 
 ### Secondary
-- **Dorado de etiqueta** (#FEB707): etiqueta de lomo, sello CTA, pestaña «Contacto», campo del bloque de contacto, foco y selección de texto, raya de margen del folio (al 55 %).
-- **Dorado prensado** (#E5A300): estado `:active` del sello, viñetas y marcas de verificación sobre papel.
+- **Dorado de etiqueta** (#CFA23E): etiqueta de lomo, sello CTA, pestaña «Contacto», campo del bloque de contacto, foco y selección de texto, raya de margen del folio (al 55 %).
+- **Dorado prensado** (#B08728): estado `:active` del sello, viñetas y marcas de verificación sobre papel.
 
 ### Neutral
 - **Papel de oficio** (#F4F4F1): fondo general y campo `field-paper`; pestaña actual.
@@ -287,7 +287,7 @@ Grid 1.4rem + texto, marca SVG en dorado prensado (dorado sobre marino), peso 50
 ### Don't:
 - **Don't** usar el hero partido con foto de equipo ni filas de tarjetas idénticas de consultora estándar.
 - **Don't** introducir degradados de marca, brillos o estética de startup tecnológica; el color es tinta plana.
-- **Don't** cambiar ni aproximar el navy #001C43 ni el dorado #FEB707; son fijos de marca.
+- **Don't** cambiar ni aproximar el navy #001C43 ni el dorado #CFA23E; son fijos de marca.
 - **Don't** usar texto dorado para lectura sobre papel; sobre papel el dorado es etiqueta, marca o fondo.
 - **Don't** inventar testimonios, casos o cifras para rellenar componentes; la prueba es solo texto propio.
 - **Don't** animar con fundidos de opacidad ni rebotes elásticos; el papel se desliza y encaja.

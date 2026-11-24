@@ -18,7 +18,7 @@ function paperTexture(variant: number): THREE.CanvasTexture {
   const g = c.getContext("2d")!;
   g.fillStyle = "#FBFBF9"; g.fillRect(0, 0, c.width, c.height);
   // margen dorado
-  g.fillStyle = "rgba(254,183,7,.75)"; g.fillRect(40, 0, 2, c.height);
+  g.fillStyle = "rgba(207, 162, 62,.75)"; g.fillRect(40, 0, 2, c.height);
   // perforaciones
   g.fillStyle = "#D9DAD5";
   for (const y of [110, 222]) { g.beginPath(); g.arc(18, y, 7, 0, Math.PI * 2); g.fill(); }
@@ -64,7 +64,7 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   geo.computeVertexNormals();
 
   const textures = Array.from({ length: 6 }, (_, i) => paperTexture(i));
-  const count = isSmall ? 10 : 28;
+  const count = isSmall ? 9 : 18;
   const sheets: Sheet[] = [];
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -81,17 +81,20 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
     const cy = isSmall
       ? (right ? rand(-1.5, 5.5) : rand(-5.5, -3.5))
       : (right ? rand(-3, 3) : (Math.random() < .5 ? rand(2.4, 3.2) : rand(-3.4, -2.6)));
+    // Cada folio en su propia capa de profundidad, con poca inclinación: no se atraviesan.
+    const layer = (isSmall ? -0.5 : 1.4) - i * (isSmall ? 0.42 : 0.36);
     const chaos = {
-      pos: new THREE.Vector3(cx, cy, isSmall ? rand(-4, -0.5) : rand(-2.5, 1.5)),
-      rot: new THREE.Euler(rand(-1.2, 1.2), rand(-1.4, 1.4), rand(-1.6, 1.6)),
+      pos: new THREE.Vector3(cx, cy, layer),
+      rot: new THREE.Euler(rand(-0.22, 0.22), rand(-0.28, 0.28), rand(-1.4, 1.4)),
     };
+    // Destino: pila de canto dentro del archivador; la separación va en la dirección de la normal
     const order = {
-      pos: new THREE.Vector3(stackX + i * 0.004, -0.1 + i * 0.012, -0.6 - i * 0.035),
+      pos: new THREE.Vector3(stackX + i * 0.03, -0.1, -0.6),
       rot: new THREE.Euler(-0.08, -1.32, 0),
     };
     mesh.position.copy(chaos.pos); mesh.rotation.copy(chaos.rot);
     scene.add(mesh);
-    sheets.push({ mesh, chaos, order, spin: new THREE.Vector3(rand(-.25, .25), rand(-.3, .3), rand(-.2, .2)), phase: rand(0, 6.28) });
+    sheets.push({ mesh, chaos, order, spin: new THREE.Vector3(0, 0, rand(-.12, .12)), phase: rand(0, 6.28) });
   }
 
   const state = { progress: 0, mx: 0, my: 0 };
