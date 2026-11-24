@@ -40,14 +40,14 @@ if (reduce) {
   ScrollTrigger.batch(".reveal", {
     start: "top 88%",
     onEnter: (els) =>
-      gsap.to(els, { opacity: 1, y: 0, duration: 1, ease: "expo.out", stagger: 0.08, overwrite: true }),
+      gsap.to(els, { y: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }),
   });
 
   // Sellos que "golpean" al entrar
   gsap.utils.toArray<HTMLElement>("[data-stamp]").forEach((el) => {
     gsap.fromTo(
       el,
-      { scale: 1.9, opacity: 0, rotate: -18 },
+      { scale: 1.9, opacity: 0.25, rotate: -18 },
       {
         scale: 1, opacity: 0.92, rotate: Number(el.dataset.stamp || -7), duration: 0.42, ease: "power4.in",
         scrollTrigger: { trigger: el, start: "top 80%" },
