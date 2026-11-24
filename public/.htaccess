@@ -23,3 +23,8 @@ ErrorDocument 404 /404.html
   Header set Referrer-Policy "strict-origin-when-cross-origin"
   Header set X-Frame-Options "SAMEORIGIN"
 </IfModule>
+
+# Notas internas de procedencia de imágenes: no se sirven
+<FilesMatch "\.(webp|png|jpe?g)\.json$">
+  Require all denied
+</FilesMatch>
