@@ -161,11 +161,14 @@ const offs = [10, -18, 26, -8, 18, -14];
       <div class="about__body">
         <p class="reveal">Consultor y colaboradores tenemos experiencia real dirigiendo empresas. Conocemos la presión de las nóminas, lo difícil que es delegar y la sensación de que, si no estás encima de todo, las cosas no salen.</p>
         <p class="reveal">Aportamos la visión externa, fría y pragmática que el día a día no te deja ver. Somos ingenieros, sabemos de finanzas y tenemos mucha experiencia comercial. Analizamos tus números sin filtros, ordenamos tus procesos y te hablamos claro.</p>
-        <ul class="checks checks--navy reveal">
-          {VALORES.map((v) => (
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{v}</li>
-          ))}
-        </ul>
+        <div class="folio about__card reveal">
+          <p class="label about__cardtab">Ficha · Lo que no negociamos</p>
+          <ul class="checks">
+            {VALORES.map((v) => (
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{v}</li>
+            ))}
+          </ul>
+        </div>
         <a href="/sobre-arcansi/" class="about__link reveal">Conoce Arcansi</a>
       </div>
     </div>
@@ -263,6 +266,7 @@ const offs = [10, -18, 26, -8, 18, -14];
     .hero__spine .spine__label { display: none; }
     .hero__title { max-width: 11ch; }
     .hero__inner { position: relative; }
+    .hero__inner > * { max-width: calc(100% - 56px); }
     .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
       background: linear-gradient(to right, rgba(0,28,67,.94) 0%, rgba(0,28,67,.86) 62%, rgba(0,28,67,0) 84%); }
   }
@@ -271,9 +275,15 @@ const offs = [10, -18, 26, -8, 18, -14];
   .desk { overflow: hidden; }
   .desk__head { display: grid; gap: 1.25rem; margin-bottom: clamp(3rem, 6vw, 5rem); }
   .desk__head h2 { font-size: var(--step-3); max-width: 18ch; color: var(--navy); }
-  .desk__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 3vw, 2.75rem) clamp(1.25rem, 2.5vw, 2.25rem); }
-  .desk__sheet { transform: rotate(calc(var(--r) * .25)); }
-  .desk__sheet:nth-child(3n+2) { margin-top: 3rem; }
+  /* Folios sueltos: tamaños, desplazamientos y giros distintos; se solapan ligeramente */
+  .desk__grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(1.5rem, 3vw, 2.5rem) 0; align-items: start; }
+  .desk__sheet { transform: rotate(calc(var(--r) * .5)); position: relative; }
+  .desk__sheet:nth-child(1) { grid-column: 1 / span 5; z-index: 2; }
+  .desk__sheet:nth-child(2) { grid-column: 5 / span 4; margin-top: 4rem; z-index: 1; }
+  .desk__sheet:nth-child(3) { grid-column: 9 / span 4; margin-top: .5rem; margin-left: -1.5rem; z-index: 3; }
+  .desk__sheet:nth-child(4) { grid-column: 2 / span 4; margin-top: -1rem; z-index: 3; }
+  .desk__sheet:nth-child(5) { grid-column: 6 / span 3; margin-top: 2.5rem; margin-left: -1rem; z-index: 2; }
+  .desk__sheet:nth-child(6) { grid-column: 8 / span 5; margin-top: -2rem; margin-left: 1rem; z-index: 4; }
   .desk__sheet h3 { font-size: var(--step-1); color: var(--navy); margin-bottom: 1rem; letter-spacing: -.015em; }
   .desk__sheet ul { margin: 0 0 1.25rem; padding-left: 1.1rem; display: grid; gap: .5rem; color: var(--ink-soft); }
   .desk__sheet li::marker { color: var(--gold-press); }
@@ -281,8 +291,12 @@ const offs = [10, -18, 26, -8, 18, -14];
   .desk__close { margin-top: clamp(3.5rem, 7vw, 6rem); display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem 2.5rem; }
   .desk__close p { font-size: var(--step-2); font-weight: 800; color: var(--navy); letter-spacing: -.02em; max-width: 22ch; line-height: 1.1; }
   .desk__close .rubber { font-size: 1.4rem; padding: .6rem 1rem; }
-  @media (max-width: 960px) { .desk__grid { grid-template-columns: repeat(2, 1fr); } .desk__sheet:nth-child(3n+2) { margin-top: 0; } .desk__sheet:nth-child(2n) { margin-top: 2.5rem; } }
-  @media (max-width: 620px) { .desk__grid { grid-template-columns: 1fr; } .desk__sheet:nth-child(2n) { margin-top: 0; } }
+  @media (max-width: 960px) {
+    .desk__grid { grid-template-columns: 1fr; gap: 0; }
+    .desk__sheet:nth-child(n) { grid-column: 1; margin: 0; width: 88%; z-index: auto; }
+    .desk__sheet:nth-child(n) + .desk__sheet { margin-top: -.75rem; }
+    .desk__sheet:nth-child(2n) { justify-self: end; }
+  }
 
   /* ── Estantería ── */
   .shelf__head { display: grid; gap: 1.25rem; margin-bottom: clamp(3rem, 6vw, 4.5rem); }
@@ -309,8 +323,14 @@ const offs = [10, -18, 26, -8, 18, -14];
     padding: .55rem .9rem .5rem; font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .07em; font-size: .98rem; }
   @media (max-width: 900px) {
     .shelf__body { grid-template-columns: 1fr; }
-    .shelf__row { overflow-x: auto; scrollbar-width: none; padding-top: 44px; }
-    .shelf__spine { flex: 0 0 auto; height: 280px !important; }
+    /* archivadores tumbados, apilados como en una balda */
+    .shelf__row { flex-direction: column; align-items: stretch; gap: 6px; padding: 0 0 10px; }
+    .shelf__spine, .shelf__spine:nth-child(2n) { width: auto; height: 60px; flex-direction: row; padding-inline: 1rem; gap: 1rem; border-radius: 2px 6px 6px 2px; }
+    .shelf__spine .spine__ring { margin: 0; width: 26px; height: 26px; flex: 0 0 auto;
+      background: radial-gradient(circle, var(--navy-deep) 0 6px, #C9CED6 6.5px 9px, var(--navy-deep) 9.5px); }
+    .shelf__spine .spine__label { writing-mode: horizontal-tb; transform: none; padding: .55rem .8rem; font-size: 1.05rem; }
+    .shelf__spine:hover { transform: none; }
+    .shelf__spine[aria-selected="true"] { transform: translateX(14px); }
   }
 
   /* ── listas de verificación ── */
@@ -334,7 +354,16 @@ const offs = [10, -18, 26, -8, 18, -14];
   .principles { display: flex; flex-wrap: wrap; gap: .5rem 0; font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: var(--step-1); color: var(--navy); }
   .principles span:not(:last-child)::after { content: ""; display: inline-block; width: .45em; height: .45em; border-radius: 50%; background: var(--gold); margin: 0 1rem; vertical-align: .18em; }
   @media (max-width: 1080px) { .method__block { grid-template-columns: 1fr; } .method__track { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .method__track, .method__track--3 { grid-template-columns: 1fr; } }
+  /* En móvil: un único folio rayado con los sellos en el margen */
+  @media (max-width: 560px) {
+    .method__track, .method__track--3 { grid-template-columns: 1fr; gap: 0; background: #FBFBF9; border-radius: 3px;
+      box-shadow: 0 1px 1px rgba(0,28,67,.06), 0 10px 28px -12px rgba(0,28,67,.28); padding: .5rem 1.25rem .5rem 2.75rem; position: relative; }
+    .method__track::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2rem; width: 1px; background: rgba(254,183,7,.6); }
+    .station.folio { background: none; box-shadow: none; border-radius: 0; padding: 1.4rem 0 3.6rem; border-bottom: 1px solid var(--paper-edge); }
+    .station.folio:last-child { border-bottom: 0; }
+    .station.folio::before { display: none; }
+    .station__stamp { right: 0; bottom: 1.2rem; }
+  }
 
   /* ── Sobre ── */
   .about { background: var(--navy-deep); }
@@ -343,6 +372,9 @@ const offs = [10, -18, 26, -8, 18, -14];
   .about__title em { font-style: normal; color: var(--gold); display: block; margin-top: .3em; }
   .about__body { display: grid; gap: 1.5rem; color: var(--on-navy); }
   .about__link { color: var(--gold); font-weight: 700; }
+  .about__card { transform: rotate(-1.2deg); margin-top: .5rem; }
+  .about__cardtab { position: absolute; top: -2.1rem; left: 1.5rem; background: var(--gold); color: var(--navy);
+    padding: .6rem .9rem .5rem; border-radius: 6px 6px 0 0; font-size: .95rem; }
   @media (max-width: 900px) { .about__grid { grid-template-columns: 1fr; } }
 
   /* ── Contacto ── */

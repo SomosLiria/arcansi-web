@@ -150,7 +150,7 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   ScrollTrigger.create({
     trigger: section,
     start: "top top",
-    end: "+=70%",
+    end: "+=45%",
     pin: true,
     scrub: 0.6,
     onUpdate: (self) => {

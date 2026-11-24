@@ -8,6 +8,7 @@
     <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
   </div>
   <p class="cform__msg" role="status" aria-live="polite" hidden></p>
+  <span class="rubber cform__seal" aria-hidden="true" hidden>Recibido</span>
   <div class="cform__row">
     <div class="cform__field">
       <label for="nombre">Nombre</label>
@@ -77,6 +78,10 @@
         const data = await res.json();
         if (data.ok) {
           show("ok", "Mensaje recibido. Te escribiremos personalmente muy pronto.");
+          const seal = form.querySelector<HTMLElement>(".cform__seal")!;
+          seal.hidden = false;
+          seal.animate([{ transform: "rotate(-18deg) scale(1.9)", opacity: 0.2 }, { transform: "rotate(-9deg) scale(1)", opacity: 0.92 }],
+            { duration: 380, easing: "cubic-bezier(.7,0,.84,0)", fill: "forwards" });
           form.reset(); csrf.value = token();
         } else {
           show("error", data.error || "No hemos podido enviar el mensaje. Inténtalo de nuevo o escríbenos a consultoria@arcansi.com.");
@@ -93,6 +98,9 @@
 <style>
   .cform { display: grid; gap: 1.25rem; color: var(--ink); }
   .cform__hp { position: absolute; left: -9999px; }
+  .cform__seal { position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.6rem; padding: .6rem 1rem; transform: rotate(-9deg); pointer-events: none; }
+  .cform { position: relative; }
+  .cform__seal[hidden] { display: none; }
   .cform__row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
   .cform__field { display: grid; gap: .4rem; }
   label { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 1rem; color: var(--navy); }
