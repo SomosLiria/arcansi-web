@@ -61,6 +61,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
                 <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{c}</li>
               ))}
             </ul>
+            <span class="svcs__go" aria-hidden="true">Ver servicio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
           </li>
         ))}
       </ul>
@@ -77,10 +78,22 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
       </header>
       <ul class="desk__grid">
         {SITUACIONES.map((s, i) => (
-          <li class="folio desk__sheet" style={`--r:${rots[i]}deg`}>
-            <h3>{s.titulo}</h3>
-            <p>{s.puntos[0]}</p>
-            <a class="desk__more" href={`/situaciones/#${s.id}`}>Cómo lo ordenamos</a>
+          <li class="desk__sheet" style={`--r:${rots[i]}deg`}>
+            <div class="flip">
+              <div class="folio flip__face flip__front">
+                <h3>{s.titulo}</h3>
+                <p>{s.puntos[0]}</p>
+                <button class="flip__btn" type="button" aria-expanded="false">
+                  Ver cómo lo ordenamos
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4"/></svg>
+                </button>
+              </div>
+              <div class="folio flip__face flip__back">
+                <span class="rubber flip__stamp">Tiene solución</span>
+                <p>{s.respuesta}</p>
+                <a class="desk__more" href={`/situaciones/#${s.id}`}>Leer más</a>
+              </div>
+            </div>
           </li>
         ))}
       </ul>
@@ -193,14 +206,39 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
     gsap.from(".hero__spine", { yPercent: 18, duration: 1.6, ease: "expo.out", delay: 0.15 });
   }
 
+  // Folios de situaciones: botón para darles la vuelta (táctil y teclado)
+  document.querySelectorAll<HTMLButtonElement>(".flip__btn").forEach((b) => {
+    b.addEventListener("click", () => {
+      const li = b.closest(".desk__sheet")!;
+      const on = li.classList.toggle("is-flipped");
+      b.setAttribute("aria-expanded", String(on));
+    });
+  });
+
+  // Tarjetas de servicio: inclinación 3D y reflejo que siguen al cursor
+  if (!reduce && matchMedia("(hover: hover)").matches) {
+    document.querySelectorAll<HTMLElement>(".svcs__card").forEach((card) => {
+      const rx = gsap.quickTo(card, "rotationX", { duration: .6, ease: "power3.out" });
+      const ry = gsap.quickTo(card, "rotationY", { duration: .6, ease: "power3.out" });
+      gsap.set(card, { transformPerspective: 900 });
+      card.addEventListener("pointermove", (e) => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        rx((0.5 - y) * 9); ry((x - 0.5) * 11);
+        card.style.setProperty("--gx", `${x * 100}%`); card.style.setProperty("--gy", `${y * 100}%`);
+      });
+      card.addEventListener("pointerleave", () => { rx(0); ry(0); });
+    });
+  }
+
   // Folios que caen sobre la mesa y se asientan
   if (!reduce) {
     gsap.from(".desk__sheet", {
-      y: 46, rotate: (i: number) => (i % 2 ? 6 : -6), duration: 1, ease: "expo.out", stagger: 0.07,
+      y: 46, rotate: (i: number) => (i % 2 ? 6 : -6), duration: 1, ease: "expo.out", stagger: 0.07, clearProps: "transform",
       scrollTrigger: { trigger: ".desk__grid", start: "top 82%" },
     });
     gsap.from(".svcs__card", {
-      y: 40, duration: 1, ease: "expo.out", stagger: 0.06,
+      y: 40, duration: 1, ease: "expo.out", stagger: 0.06, clearProps: "y",
       scrollTrigger: { trigger: ".svcs__grid", start: "top 85%" },
     });
   }
@@ -264,8 +302,19 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .svcs__card h3 a { color: var(--navy); text-decoration: none; }
   .svcs__card h3 a::after { content: ""; position: absolute; inset: 0; }
   .svcs__card > p { color: var(--ink-soft); font-size: .98rem; margin-bottom: 1rem; }
-  .svcs__card { transition: transform .4s var(--ease-out), box-shadow .4s var(--ease-out); }
-  .svcs__card:hover { transform: translateY(-6px); box-shadow: 0 2px 2px rgba(0,28,67,.06), 0 22px 40px -18px rgba(0,28,67,.4); }
+  .svcs__card { transition: box-shadow .4s var(--ease-out); will-change: transform; display: flex; flex-direction: column; }
+  .svcs__card:hover { box-shadow: 0 0 0 1px rgba(0,28,67,.08), 0 30px 50px -22px rgba(0,28,67,.5); }
+  /* reflejo de luz que sigue al cursor */
+  .svcs__card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s;
+    background: radial-gradient(420px circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.75), rgba(255,255,255,0) 45%); mix-blend-mode: soft-light; }
+  .svcs__card:hover::after { opacity: 1; }
+  .svcs__tab { transition: transform .4s var(--ease-out), background-color .3s, color .3s; }
+  .svcs__card:hover .svcs__tab { transform: translateY(-5px); background: var(--gold); color: var(--navy); }
+  .svcs__go { margin-top: auto; padding-top: 1.1rem; display: inline-flex; align-items: center; gap: .45rem;
+    font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .09em; font-size: .95rem; color: var(--navy); }
+  .svcs__go svg { width: 1rem; height: 1rem; transition: transform .4s var(--ease-out); }
+  .svcs__card:hover .svcs__go svg { transform: translateX(5px); }
+  .svcs__card:hover .svcs__go { color: var(--gold-press); }
   .svcs__card:focus-within { outline: 3px solid var(--gold); outline-offset: 4px; }
   .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem; }
   .checks li { display: grid; grid-template-columns: 1.2rem 1fr; gap: .55rem; font-size: .93rem; font-weight: 500; }
@@ -277,12 +326,26 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 
   /* ── Situaciones ── */
   .desk__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-  .desk__sheet { transform: rotate(var(--r)); padding-block: 1.5rem; }
-  .desk__sheet h3 { font-size: var(--step-1); color: var(--navy); margin-bottom: .5rem; letter-spacing: -.015em; }
-  .desk__sheet p { color: var(--ink-soft); margin-bottom: .9rem; }
-  .desk__more { font-weight: 600; color: var(--navy); font-size: .95rem; }
+  /* Folio que se da la vuelta: problema delante, solución detrás */
+  .desk__sheet { transform: rotate(var(--r)); perspective: 1400px; transition: transform .5s var(--ease-out); }
+  .desk__sheet:hover, .desk__sheet:focus-within { transform: rotate(0deg) translateY(-6px); z-index: 2; }
+  .flip { display: grid; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.2,.8,.2,1); height: 100%; }
+  .flip__face { grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; padding-block: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; }
+  .flip__back { transform: rotateY(180deg); background-color: #FFFDF7; }
+  @media (hover: hover) { .desk__sheet:hover .flip { transform: rotateY(180deg); } }
+  .desk__sheet.is-flipped .flip { transform: rotateY(180deg); }
+  .flip__face h3 { font-size: var(--step-1); color: var(--navy); margin-bottom: .5rem; letter-spacing: -.015em; }
+  .flip__face p { color: var(--ink-soft); margin-bottom: 1rem; }
+  .flip__back p { color: var(--ink); font-size: .98rem; }
+  .flip__btn { margin-top: auto; display: inline-flex; align-items: center; gap: .5rem; background: none; border: 0; padding: 0; cursor: pointer;
+    font: 600 .95rem var(--font-body); color: var(--navy); }
+  .flip__btn svg { width: 1.05rem; height: 1.05rem; color: var(--gold-press); transition: transform .5s var(--ease-out); }
+  .desk__sheet:hover .flip__btn svg { transform: rotate(180deg); }
+  .flip__stamp { align-self: flex-end; margin: -.3rem -.2rem .8rem 0; font-size: .9rem; }
+  .desk__more { margin-top: auto; font-weight: 600; color: var(--navy); font-size: .95rem; }
+  @media (prefers-reduced-motion: reduce) { .flip { transition: none; } }
   .desk__close { margin-top: clamp(2.5rem, 5vw, 3.5rem); display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; }
-  .desk__close p { font-size: var(--step-2); font-weight: 800; color: #fff; letter-spacing: -.02em; line-height: 1.1; }
+  .desk__close p { font-size: var(--step-2); font-family: var(--font-display); font-weight: 400; color: #fff; letter-spacing: -.02em; line-height: 1.1; }
   .desk__close .rubber { font-size: 1.3rem; padding: .55rem .95rem; }
   @media (max-width: 960px) { .desk__grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .desk__grid { grid-template-columns: 1fr; gap: .9rem; } }
