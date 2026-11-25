@@ -70,11 +70,11 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
   // Destino ordenado: pila de frente junto al archivador.
-  const stackX = isSmall ? 1.45 : 2.85;
+  const stackX = isSmall ? 1.8 : 3.05;
   const stackRot = new THREE.Euler(-0.42, -0.34, -0.06);
   // Normal de la pila: las hojas se separan a lo largo de ella, así nunca se atraviesan.
   const stackNormal = new THREE.Vector3(0, 0, 1).applyEuler(stackRot);
-  const stackBase = new THREE.Vector3(stackX, -0.45, 2.1);
+  const stackBase = new THREE.Vector3(stackX, isSmall ? -0.45 : -1.55, 2.1);
   for (let i = 0; i < count; i++) {
     const mat = new THREE.MeshStandardMaterial({ map: textures[i % textures.length], roughness: 0.92, metalness: 0, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geo, mat);
@@ -82,7 +82,7 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
     const right = true;
     const cx = isSmall
       ? rand(1.6, 2.8)
-      : (right ? rand(2.6, 7) : rand(-7.5, -4));
+      : (right ? rand(3.1, 7.2) : rand(-7.5, -4));
     const cy = isSmall
       ? (right ? rand(-1.5, 5.5) : rand(-5.5, -3.5))
       : (right ? rand(-3, 3) : (Math.random() < .5 ? rand(2.4, 3.2) : rand(-3.4, -2.6)));
