@@ -38,8 +38,8 @@ const nombre = (slug: string) => SERVICIOS.find((s) => s.slug === slug)!;
 <style>
   .cases { display: grid; gap: clamp(4rem, 8vw, 7rem); }
   .case { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; scroll-margin-top: calc(var(--tab-h) + 2rem); }
-  .case:nth-child(2n) .case__sheet { order: 2; transform: rotate(1.2deg); }
-  .case__sheet { transform: rotate(-1.2deg); }
+  .case:nth-child(2n) .case__sheet { order: 2; }
+  .case__sheet { }
   .case__sheet h2 { font-size: var(--step-2); color: var(--navy); margin-bottom: 1rem; }
   .case__sheet ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .55rem; color: var(--ink-soft); }
   .case__sheet li::marker { color: var(--gold-press); }
