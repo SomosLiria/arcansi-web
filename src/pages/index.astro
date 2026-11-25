@@ -362,8 +362,8 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero__index a:hover svg, .hero__index a:focus-visible svg { opacity: 1; transform: translate(2px, -2px); }
   /* Sello final del archivado: se estampa al terminar (--p lo fija ScrollTrigger) */
   .hero .hero__seal { --k: clamp(0, (var(--p, 0) - .86) * 8, 1);
-    position: absolute; right: clamp(10rem, 19vw, 19rem); top: 71%; z-index: 1; width: max-content; justify-self: end; align-self: start; font-size: clamp(1.3rem, 1.8vw, 1.8rem); padding: .6rem 1.1rem;
-    color: var(--navy-lift); border-width: 3px; background: rgba(207,162,62,.22); mix-blend-mode: multiply;
+    position: absolute; left: 73%; top: 69%; translate: -50% 0; z-index: 1; width: max-content; justify-self: start; align-self: start; font-size: clamp(1.3rem, 1.8vw, 1.8rem); padding: .6rem 1.1rem;
+    color: var(--gold); border-width: 1.5px; background: rgba(0,17,43,.5); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); mix-blend-mode: normal;
     opacity: var(--k); transform: scale(calc(1.4 - var(--k) * .4)); pointer-events: none; }
   @media (max-width: 760px) { .hero__seal { display: none; } }
   .hero__spine { position: absolute; right: clamp(.75rem, 3vw, 3rem); bottom: 0; top: 18%; width: clamp(64px, 7vw, 104px); z-index: -1; border-radius: 6px 6px 0 0; }

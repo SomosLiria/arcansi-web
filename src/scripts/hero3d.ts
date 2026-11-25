@@ -65,48 +65,11 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   geo.computeVertexNormals();
 
   const textures = Array.from({ length: 6 }, (_, i) => paperTexture(i));
-  const count = isSmall ? 9 : 18;
+  const count = isSmall ? 8 : 16;
   const sheets: Sheet[] = [];
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-  // Destino ordenado: pila de frente junto al archivador.
-  const stackX = isSmall ? 1.8 : 3.05;
-  const stackRot = new THREE.Euler(-0.42, -0.34, -0.06);
-  // Normal de la pila: las hojas se separan a lo largo de ella, así nunca se atraviesan.
-  const stackNormal = new THREE.Vector3(0, 0, 1).applyEuler(stackRot);
-  const stackBase = new THREE.Vector3(stackX, isSmall ? -0.45 : -1.55, 2.1);
-  for (let i = 0; i < count; i++) {
-    const mat = new THREE.MeshStandardMaterial({ map: textures[i % textures.length], roughness: 0.92, metalness: 0, side: THREE.DoubleSide });
-    const mesh = new THREE.Mesh(geo, mat);
-    // El desorden vive a la derecha y en los bordes: el titular (izquierda) queda limpio.
-    const right = true;
-    const cx = isSmall
-      ? rand(1.6, 2.8)
-      : (right ? rand(3.1, 7.2) : rand(-7.5, -4));
-    const cy = isSmall
-      ? (right ? rand(-1.5, 5.5) : rand(-5.5, -3.5))
-      : (right ? rand(-3, 3) : (Math.random() < .5 ? rand(2.4, 3.2) : rand(-3.4, -2.6)));
-    // Cada folio en su propia capa de profundidad, con poca inclinación: no se atraviesan.
-    // Capas bien separadas y poca inclinación fuera del plano: los folios no se cruzan.
-    const layer = (isSmall ? -0.5 : 1.6) - i * (isSmall ? 0.55 : 0.5);
-    const chaos = {
-      pos: new THREE.Vector3(cx, cy, layer),
-      rot: new THREE.Euler(rand(-0.12, 0.12), rand(-0.14, 0.14), rand(-1.4, 1.4)),
-    };
-    // Destino: pila cuadrada. El folio 0 (el más cercano en el desorden) queda arriba:
-    // el orden de profundidad se conserva y ninguna hoja pasa a través de otra.
-    const order = {
-      pos: stackBase.clone().addScaledVector(stackNormal, (count - 1 - i) * 0.026)
-        .add(new THREE.Vector3(rand(-0.012, 0.012), rand(-0.012, 0.012), 0)),
-      rot: new THREE.Euler(stackRot.x, stackRot.y, stackRot.z + rand(-0.01, 0.01)),
-    };
-    mesh.position.copy(chaos.pos); mesh.rotation.copy(chaos.rot);
-    scene.add(mesh);
-    sheets.push({ mesh, chaos, order, spin: new THREE.Vector3(0, 0, rand(-.12, .12)), phase: rand(0, 6.28) });
-  }
-
   const state = { progress: 0, mx: 0, my: 0 };
-
   const resize = () => {
     const w = section.clientWidth, h = section.clientHeight;
     renderer.setSize(w, h, false);
@@ -114,6 +77,48 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   };
   resize();
   window.addEventListener("resize", resize);
+
+  camera.lookAt(0, 0, 0); camera.updateMatrixWorld(true);
+  // De píxeles de la sección a coordenadas del mundo, en un plano de profundidad z
+  const toWorld = (px: number, py: number, z = 0) => {
+    const w = section.clientWidth, h = section.clientHeight;
+    const v = new THREE.Vector3((px / w) * 2 - 1, -(py / h) * 2 + 1, 0.5).unproject(camera);
+    const dir = v.sub(camera.position).normalize();
+    return camera.position.clone().add(dir.multiplyScalar((z - camera.position.z) / dir.z));
+  };
+  const sRect = section.getBoundingClientRect();
+  const aEl = section.querySelector<HTMLElement>(".hero__compass");
+  const spEl = section.querySelector<HTMLElement>(".hero__spine");
+  const aR = aEl?.getBoundingClientRect();
+  const spR = spEl?.getBoundingClientRect();
+  // Eje de la aguja de la A: (283,383) dentro del viewBox 60..500 × 10..600
+  const hubPx = aR ? [aR.left - sRect.left + aR.width * 0.507, aR.top - sRect.top + aR.height * 0.632] : [sRect.width * 0.73, sRect.height * 0.5];
+  const hub = toWorld(hubPx[0], hubPx[1]);
+  const aRadius = aR ? toWorld(hubPx[0] + aR.width * 0.5, hubPx[1]).x - hub.x : 2.6;
+  const spinePt = spR ? toWorld(spR.left - sRect.left + spR.width / 2, spR.top - sRect.top + spR.height * 0.35) : new THREE.Vector3(5.2, 0.6, 0);
+
+  for (let i = 0; i < count; i++) {
+    const mat = new THREE.MeshStandardMaterial({ map: textures[i % textures.length], roughness: 0.92, metalness: 0, side: THREE.DoubleSide, transparent: true });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.scale.setScalar(isSmall ? 0.6 : 0.72);
+    // Órbita alrededor de la A: nunca en el centro y nunca hacia el titular (sector izquierdo)
+    const z = (isSmall ? 0.2 : 1.0) - i * (isSmall ? 0.3 : 0.24);
+    // repartidos por el anillo (arriba, derecha, abajo) para no amontonarse
+    const theta = isSmall ? rand(-1.6, 1.6) : (-1.85 + (i / (count - 1)) * 3.7 + rand(-0.12, 0.12));
+    const radius = aRadius * rand(1.0, 1.3) * ((12 - z) / 12);
+    const chaos = {
+      pos: new THREE.Vector3(hub.x + Math.cos(theta) * radius, hub.y + Math.sin(theta) * radius * 1.05, z),
+      rot: new THREE.Euler(rand(-0.12, 0.12), rand(-0.14, 0.14), rand(-1.2, 1.2)),
+    };
+    // Destino: de canto, entrando en el lomo del archivador
+    const order = {
+      pos: new THREE.Vector3(spinePt.x - 0.15 + i * 0.012, spinePt.y + rand(-0.05, 0.05), 0.2),
+      rot: new THREE.Euler(0, -1.5, 0),
+    };
+    mesh.position.copy(chaos.pos); mesh.rotation.copy(chaos.rot);
+    scene.add(mesh);
+    sheets.push({ mesh, chaos: { ...chaos, theta, radius } as any, order, spin: new THREE.Vector3(0, 0, rand(-.1, .1)), phase: rand(0, 6.28) });
+  }
 
   if (!isSmall && !opts.reduce) {
     window.addEventListener("pointermove", (e) => {
@@ -125,26 +130,29 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   const tmpPos = new THREE.Vector3();
   const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
   const clock = new THREE.Clock();
+  const baseScale = isSmall ? 0.6 : 0.72;
 
   const render = () => {
     const t = clock.getElapsedTime();
     const pr = state.progress;
     sheets.forEach((s, i) => {
+      const c = s.chaos as any;
       // cada folio se archiva con un pequeño retraso propio
       const local = gsap.utils.clamp(0, 1, (pr - (i / sheets.length) * 0.35) / 0.65);
-      const e = 1 - Math.pow(1 - local, 3);
-      const drift = (1 - e);
-      tmpPos.copy(s.chaos.pos);
-      tmpPos.x += Math.sin(t * 0.35 + s.phase) * 0.18 * drift;
-      tmpPos.y += Math.cos(t * 0.3 + s.phase) * 0.22 * drift;
+      const e = local < 0.5 ? 4 * local ** 3 : 1 - Math.pow(-2 * local + 2, 3) / 2;
+      const drift = 1 - e;
+      // órbita lenta alrededor de la brújula
+      const th = c.theta + Math.sin(t * 0.18 + s.phase) * 0.28;
+      tmpPos.set(hub.x + Math.cos(th) * c.radius, hub.y + Math.sin(th) * c.radius * 1.05 + Math.sin(t * 0.5 + s.phase) * 0.08, c.pos.z);
       s.mesh.position.lerpVectors(tmpPos, s.order.pos, e);
-      const cr = new THREE.Euler(
-        s.chaos.rot.x + t * s.spin.x * drift,
-        s.chaos.rot.y + t * s.spin.y * drift,
-        s.chaos.rot.z + t * s.spin.z * drift
-      );
+      const cr = new THREE.Euler(c.rot.x, c.rot.y, c.rot.z + t * s.spin.z * drift);
       qa.setFromEuler(cr); qb.setFromEuler(s.order.rot);
       s.mesh.quaternion.slerpQuaternions(qa, qb, e);
+      // al entrar en el archivador se encogen y desaparecen
+      const gone = gsap.utils.clamp(0, 1, (e - 0.72) / 0.28);
+      s.mesh.scale.setScalar(baseScale * (1 - gone * 0.55));
+      (s.mesh.material as THREE.MeshStandardMaterial).opacity = 1 - gone;
+      s.mesh.visible = gone < 0.999;
     });
     // Brújula: la aguja busca rumbo en el desorden y se fija al norte al ordenarse
     const settle = 1 - Math.pow(1 - gsap.utils.clamp(0, 1, pr * 1.12), 3);
