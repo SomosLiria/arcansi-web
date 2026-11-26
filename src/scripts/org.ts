@@ -17,16 +17,16 @@ const heads = [
 ];
 
 function buildNodes(): N[] {
-  const out: N[] = [{ id: "hub", label: "Tú", parent: null, start: [320, 300], end: [320, 70], kind: "hub" }];
+  const out: N[] = [{ id: "hub", label: "Tú", parent: null, start: [320, 300], end: [320, 95], kind: "hub" }];
   const all: Omit<N, "start">[] = [];
   heads.forEach((h) => {
-    all.push({ id: h.id, label: h.label, problem: h.problem, parent: "hub", end: [h.x, 300], kind: "head" });
-    h.kids.forEach(([k, pb], j) => all.push({ id: `${h.id}${j}`, label: k, problem: pb, parent: h.id, end: [h.x + (j ? 46 : -46), 460], kind: "leaf" }));
+    all.push({ id: h.id, label: h.label, problem: h.problem, parent: "hub", end: [h.x, 345], kind: "head" });
+    h.kids.forEach(([k, pb], j) => all.push({ id: `${h.id}${j}`, label: k, problem: pb, parent: h.id, end: [h.x + (j ? 46 : -46), 505], kind: "leaf" }));
   });
   // al inicio: todos en un anillo alrededor de "Tú", desordenados
   all.forEach((n, i) => {
-    const a = (i / all.length) * Math.PI * 2 + (i % 2 ? 0.35 : -0.2);
-    const r = i % 3 === 0 ? 205 : i % 3 === 1 ? 160 : 235;
+    const a = (i / all.length) * Math.PI * 2 + 0.15;
+    const r = i % 2 ? 175 : 235;
     out.push({ ...n, start: [320 + Math.cos(a) * r, 300 + Math.sin(a) * r * 0.86] } as N);
   });
   return out;
@@ -41,12 +41,20 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
   svg.append(crossG, linesG, nodesG);
 
   // líneas de "caos": conexiones cruzadas entre áreas que desaparecen al ordenar
-  const cross = [["fin0", "com1"], ["pro1", "fin1"], ["com0", "pro0"], ["fin", "com0"], ["pro", "fin0"], ["com", "pro1"]].map(([a, b]) => {
+  const cross = [["fin0", "com1"], ["pro1", "fin1"], ["com0", "pro0"], ["fin", "com0"], ["pro", "fin0"], ["com", "pro1"],
+    ["fin1", "com"], ["pro0", "com1"], ["fin", "pro1"], ["com0", "fin0"], ["pro", "com1"], ["fin1", "pro0"]].map(([a, b]) => {
     const l = document.createElementNS(NS, "line"); l.setAttribute("class", "org-cross"); crossG.append(l); return { l, a, b };
   });
 
   const lines = nodes.filter((n) => n.parent).map((n) => {
     const p = document.createElementNS(NS, "path"); p.setAttribute("class", "org-line"); linesG.append(p); return { p, n };
+  });
+
+  // pulsos que fluyen por las conexiones cuando todo está en orden
+  const flowG = document.createElementNS(NS, "g"); svg.insertBefore(flowG, nodesG);
+  const pulses = lines.map(({ p, n }, i) => {
+    const c = document.createElementNS(NS, "circle"); c.setAttribute("r", "3.6"); c.setAttribute("class", "org-pulse"); flowG.append(c);
+    return { c, p, off: n.kind === "leaf" ? 0.5 : 0, speed: 0.55 + (i % 3) * 0.08 };
   });
 
   const els = nodes.map((n) => {
@@ -59,13 +67,13 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
     if (n.kind === "hub") {
       // la A de Arcansi: aparece al ordenar, con su aguja de brújula
       const a = document.createElementNS(NS, "g"); a.setAttribute("class", "org-a");
-      a.innerHTML = `<g transform="scale(.3) translate(-283 -340)">
+      a.innerHTML = `<g transform="scale(.34) translate(-283 -340)">
         <g stroke="#E9EEF6" stroke-width="46"><line x1="280" y1="28" x2="190" y2="290"/><line x1="280" y1="28" x2="370" y2="290"/><line x1="140" y1="430" x2="96" y2="560"/><line x1="420" y1="430" x2="464" y2="560"/></g>
         <path d="M 172 494 A 150 150 0 1 1 384 262" fill="none" stroke="#E9EEF6" stroke-width="30"/>
         <path d="M 418 340 A 150 150 0 0 1 312 524" fill="none" stroke="#E9EEF6" stroke-width="30"/>
         <g class="org-needle"><polygon points="118,582 266,368 300,398" fill="#E9EEF6"/><polygon points="262,366 458,180 304,402" fill="#FEB707"/></g>
         <circle cx="283" cy="383" r="22" fill="#001C43" stroke="#E9EEF6" stroke-width="7"/></g>`;
-      const cap = document.createElementNS(NS, "text"); cap.setAttribute("class", "org-cap"); cap.setAttribute("text-anchor", "middle"); cap.setAttribute("y", "112"); cap.setAttribute("fill", "#CFA23E"); cap.textContent = "Dirección";
+      const cap = document.createElementNS(NS, "text"); cap.setAttribute("class", "org-cap"); cap.setAttribute("text-anchor", "middle"); cap.setAttribute("y", "128"); cap.setAttribute("fill", "#CFA23E"); cap.textContent = "Dirección";
       a.append(cap); g.append(a);
     }
     let badge: SVGTextElement | null = null, badgeG: SVGGElement | null = null;
@@ -88,10 +96,12 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
     const e = ease(Math.min(1, Math.max(0, state.p / 0.85)));
     const chaos = 1 - e;
     els.forEach(({ g, n, phase }) => {
-      const jx = Math.sin(time * 2.1 + phase) * 6 * chaos, jy = Math.cos(time * 1.7 + phase) * 6 * chaos;
+      const jx = (Math.sin(time * 3.1 + phase) * 9 + Math.sin(time * 11 + phase) * 2.5) * chaos;
+      const jy = (Math.cos(time * 2.6 + phase) * 9 + Math.cos(time * 13 + phase) * 2.5) * chaos;
       const x = lerp(n.start[0], n.end[0], e) + jx, y = lerp(n.start[1], n.end[1], e) + jy;
       pos[n.id] = [x, y];
-      g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+      const rot = n.kind === "hub" ? Math.sin(time * 6) * 3 * chaos : Math.sin(time * 2.4 + phase) * 7 * chaos;
+      g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(2)})`);
     });
     lines.forEach(({ p, n }) => {
       // al inicio todo cuelga de "Tú"; al final, de su responsable
@@ -100,7 +110,7 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
       const ay = n.kind === "leaf" ? lerp(hub[1], par[1], e) : par[1];
       let [x, y] = pos[n.id];
       // de borde a borde: sale por debajo del padre y entra por arriba del hijo
-      const hp = n.kind === "leaf" ? 22 : 27 + 105 * e, hc = (n.kind === "leaf" ? 34 : 44) / 2;
+      const hp = n.kind === "leaf" ? 22 : 27 + 120 * e, hc = (n.kind === "leaf" ? 34 : 44) / 2;
       const ay2 = ay + hp * e, y2 = y - hc * e;
       const my = lerp((ay2 + y2) / 2, ay2 + (y2 - ay2) * 0.5, e);
       // en orden: codos rectos de organigrama; en caos: línea directa
@@ -112,7 +122,7 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
     cross.forEach(({ l, a, b }) => {
       l.setAttribute("x1", String(pos[a][0])); l.setAttribute("y1", String(pos[a][1]));
       l.setAttribute("x2", String(pos[b][0])); l.setAttribute("y2", String(pos[b][1]));
-      l.style.opacity = String(chaos * 0.9);
+      l.style.opacity = String(chaos * (0.45 + 0.45 * Math.abs(Math.sin(time * 4 + l.x1.baseVal.value))));
     });
     const hubEl = els[0];
     // problemas -> áreas: el texto cambia a mitad de camino
@@ -127,7 +137,17 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
     const needle = (Math.sin(time * 1.3) * 70 + Math.sin(time * 0.5 + 1.2) * 50) * (1 - aIn) + Math.sin(time * 9) * 4 * (1 - aIn);
     aG.querySelector(".org-needle")!.setAttribute("transform", `rotate(${needle.toFixed(2)} 283 383)`);
     const count = Math.round(27 * chaos);
-    if (hubEl.badge && hubEl.badgeG) { hubEl.badge.textContent = String(count); hubEl.badgeG.style.opacity = String(Math.min(1, chaos * 4)); hubEl.badgeG.style.display = chaos < 0.03 ? "none" : ""; }
+    if (hubEl.badge && hubEl.badgeG) { hubEl.badge.textContent = String(count); hubEl.badgeG.style.opacity = String(Math.min(1, chaos * 4)); hubEl.badgeG.style.display = chaos < 0.03 ? "none" : "";
+      const bx = 75 - 6, by = -27 + 4, k = 1 + Math.max(0, Math.sin(time * 5)) * 0.18 * chaos;
+      hubEl.badgeG.setAttribute("transform", `translate(${bx} ${by}) scale(${k.toFixed(3)})`); }
+    const flow = Math.min(1, Math.max(0, (e - 0.85) / 0.15));
+    pulses.forEach(({ c, p, off, speed }) => {
+      if (flow <= 0) { c.style.opacity = "0"; return; }
+      const L = p.getTotalLength(); const f = ((time * speed + off) % 1);
+      const pt = p.getPointAtLength(f * L);
+      c.setAttribute("cx", pt.x.toFixed(1)); c.setAttribute("cy", pt.y.toFixed(1));
+      c.style.opacity = String(flow * Math.sin(f * Math.PI));
+    });
     section.style.setProperty("--org", e.toFixed(3));
   };
 

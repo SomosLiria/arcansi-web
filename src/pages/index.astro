@@ -13,7 +13,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 >
   <!-- ═══ PORTADA ═══ -->
   <section class="hero field-navy" id="hero" aria-labelledby="hero-title">
-    <svg class="hero__org" viewBox="0 0 640 520" aria-hidden="true"></svg>
+    <svg class="hero__org" viewBox="0 0 640 560" aria-hidden="true"></svg>
     <div class="hero__spine spine" aria-hidden="true">
       <span class="spine__ring"></span>
       <span class="spine__label">Tu empresa, en orden</span>
@@ -323,7 +323,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
     background-image: var(--grain), radial-gradient(55% 75% at 76% 46%, #0B3170 0%, rgba(11,49,112,.35) 45%, rgba(0,28,67,0) 75%);
     background-size: 220px, auto; background-blend-mode: soft-light, normal; }
   /* Organigrama vivo */
-  .hero__org { position: absolute; z-index: 0; right: clamp(1rem, 4vw, 4rem); top: 50%; translate: 0 -50%; width: min(42vw, 600px); height: auto; overflow: visible; pointer-events: none; }
+  .hero__org { position: absolute; z-index: 0; right: max(1rem, calc((100vw - var(--max)) / 2 - 1rem)); top: 53%; translate: 0 -50%; width: clamp(420px, 41vw, 700px); height: auto; overflow: visible; pointer-events: none; }
   .hero__org :global(.org-line) { fill: none; stroke: color-mix(in srgb, rgba(233,238,246,.45), var(--gold) calc(var(--org, 0) * 100%)); stroke-width: 1.6; }
   .hero__org :global(.org-cross) { stroke: rgba(233,238,246,.22); stroke-width: 1; stroke-dasharray: 4 5; }
   .hero__org :global(.org-node rect) { fill: #0B2A5E; stroke: rgba(255,255,255,.3); stroke-width: 1; }
@@ -334,7 +334,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero__org :global(.org-node--hub text) { fill: var(--navy); font-size: 19px; }
   .hero__org :global(.org-badge circle) { fill: #C2412D; stroke: var(--navy); stroke-width: 3; }
   .hero__org :global(.org-badge text) { fill: #fff; font-family: var(--font-body); font-weight: 700; font-size: 14px; letter-spacing: 0; }
-  .hero__org :global(.org-badge) { }
+  .hero__org :global(.org-pulse) { fill: #FFE3A0; filter: drop-shadow(0 0 6px rgba(254,183,7,.9)); }
   .hero__org :global(.org-node.is-problem rect) { stroke: rgba(226,96,76,.75); fill: rgba(90,24,30,.55); }
   .hero__org :global(.org-node.is-problem text) { fill: #F3C9C1; }
   .hero__org :global(.org-node--hub .org-cap) { fill: var(--gold); font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 15px; fill: var(--gold); }
@@ -349,7 +349,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero__inner { align-self: center; padding-block: calc(var(--tab-h) + 2.5rem) 2.5rem; }
   .hero__what { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: clamp(1rem, .9rem + .4vw, 1.25rem); color: var(--gold); margin-top: 1.4rem; }
   .hero__title { font-size: clamp(2.4rem, 1.4rem + 3.1vw, 4.2rem); max-width: 15ch; letter-spacing: -0.035em; color: #fff; }
-  .hero__sub { margin-top: .9rem; max-width: 50ch; font-size: var(--step-1); line-height: 1.5; color: var(--on-navy); }
+  .hero__sub { margin-top: .9rem; max-width: 42ch; font-size: var(--step-1); line-height: 1.5; color: var(--on-navy); }
   .hero__actions { margin-top: 2.25rem; display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2rem; }
   .hero__link { color: var(--on-navy); font-weight: 600; }
   .hero__link:hover { color: var(--gold); }
