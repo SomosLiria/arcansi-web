@@ -48,6 +48,8 @@
     const msg = form.querySelector<HTMLParagraphElement>(".cform__msg")!;
     const token = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
     csrf.value = token();
+    // si viene del autodiagnóstico, se precarga el resultado en el mensaje
+    try { const d = sessionStorage.getItem("arcansi-diag"); const ta = form.querySelector<HTMLTextAreaElement>("#mensaje"); if (d && ta && !ta.value && location.pathname.startsWith("/contacto")) ta.value = d; } catch {}
 
     const show = (type: "ok" | "error", text: string) => { msg.hidden = false; msg.dataset.type = type; msg.textContent = text; };
     const mark = (el: HTMLInputElement | HTMLTextAreaElement, bad: boolean) => {

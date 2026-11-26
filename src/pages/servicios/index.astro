@@ -2,6 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import PageHero from "../../components/PageHero.astro";
 import CtaBand from "../../components/CtaBand.astro";
+import Shelf from "../../components/Shelf.astro";
 import { SERVICIOS, COLABORADORES } from "../../data/site";
 ---
 <Base
@@ -11,6 +12,8 @@ import { SERVICIOS, COLABORADORES } from "../../data/site";
   <PageHero title="Servicios de consultoría para pymes" lomo="Servicios" crumbs={[{ href: "/servicios/", label: "Servicios" }]}>
     <p>Cada empresa es diferente. No vendemos paquetes cerrados ni soluciones mágicas: trabajamos sobre lo que de verdad necesitas.</p>
   </PageHero>
+
+  <Shelf />
 
   <section class="section field-paper">
     <div class="wrap">

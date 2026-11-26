@@ -1,0 +1,110 @@
+---
+// Estantería de archivadores: cada lomo es un servicio. Al pulsarlo sube y abre su ficha.
+import { SERVICIOS } from "../data/site";
+interface Props { title?: string; text?: string; }
+const {
+  title = "Tu archivo de servicios",
+  text = "Saca el archivador que necesites. Cada uno es un área de tu empresa que ponemos en orden.",
+} = Astro.props;
+---
+<section class="section field-navy shelf" aria-labelledby="shelf-title">
+  <div class="wrap">
+    <header class="shelf__head">
+      <h2 id="shelf-title" class="reveal">{title}</h2>
+      <p class="lede muted reveal">{text}</p>
+    </header>
+    <div class="shelf__body">
+      <div class="shelf__row" role="tablist" aria-label="Servicios" aria-orientation="horizontal">
+        {SERVICIOS.map((s, i) => (
+          <button class="spine shelf__spine" role="tab" id={`tab-${s.slug}`} aria-controls={`panel-${s.slug}`}
+            aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? 0 : -1}>
+            <span class="spine__ring" aria-hidden="true"></span>
+            <span class="spine__label">{s.lomo}</span>
+          </button>
+        ))}
+      </div>
+      <div class="shelf__panels">
+        {SERVICIOS.map((s, i) => (
+          <article class="glass shelf__panel" role="tabpanel" id={`panel-${s.slug}`} aria-labelledby={`tab-${s.slug}`} hidden={i !== 0}>
+            <span class="label shelf__tag">{s.lomo}</span>
+            <h3>{s.nombre}</h3>
+            <p class="shelf__resumen">{s.resumen}</p>
+            <ul class="shelf__checks">
+              {s.checks.map((c) => (
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>{c}</li>
+              ))}
+            </ul>
+            <a class="stamp" href={`/servicios/${s.slug}/`}>
+              Ver {s.nombre.toLowerCase()}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches || location.search.includes("nomotion");
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>(".shelf__spine"));
+  const select = (t: HTMLButtonElement, focus = false) => {
+    tabs.forEach((b) => {
+      const on = b === t;
+      b.setAttribute("aria-selected", String(on));
+      b.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(b.getAttribute("aria-controls")!)!;
+      panel.hidden = !on;
+      if (on && !reduce) gsap.fromTo(panel, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: .7, ease: "expo.out" });
+    });
+    if (focus) t.focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(t));
+    t.addEventListener("keydown", (e) => {
+      const n = tabs.length;
+      const go = { ArrowRight: (i + 1) % n, ArrowDown: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, ArrowUp: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>;
+      if (e.key in go) { e.preventDefault(); select(tabs[go[e.key]], true); }
+    });
+  });
+  // los archivadores entran en la estantería uno a uno
+  if (!reduce && tabs.length) {
+    gsap.from(tabs, { y: 90, duration: 1, ease: "expo.out", stagger: 0.07, clearProps: "transform",
+      scrollTrigger: { trigger: ".shelf__row", start: "top 85%" } });
+  }
+</script>
+
+<style>
+  .shelf { overflow: hidden; }
+  .shelf__head { display: grid; gap: 1.1rem; margin-bottom: clamp(3rem, 6vw, 4.5rem); }
+  .shelf__head h2 { font-size: var(--step-3); color: #fff; max-width: 18ch; }
+  .shelf__body { display: grid; grid-template-columns: auto 1fr; gap: clamp(2rem, 4vw, 4rem); align-items: end; }
+  .shelf__row { display: flex; gap: 10px; align-items: flex-end; padding-bottom: 14px; padding-top: 44px;
+    border-bottom: 12px solid var(--navy-deep); box-shadow: 0 16px 0 -8px rgba(0,0,0,.25); }
+  .shelf__spine { width: clamp(58px, 5.4vw, 74px); height: clamp(340px, 32vw, 440px); border: 0; cursor: pointer; font: inherit;
+    transition: transform .5s var(--ease-out), background-color .25s; }
+  .shelf__spine:nth-child(2n) { height: clamp(320px, 30vw, 410px); background-color: #0D3270; }
+  .shelf__spine:nth-child(3n) { background-color: #062559; }
+  .shelf__spine:hover { transform: translateY(-10px); }
+  .shelf__spine[aria-selected="true"] { transform: translateY(-38px); background-color: var(--gold); }
+  .shelf__spine[aria-selected="true"] .spine__label { background: var(--navy); color: var(--gold); }
+  .shelf__panel { max-width: 580px; padding: clamp(1.75rem, 3vw, 2.5rem); }
+  .shelf__tag { display: inline-block; background: var(--gold); color: var(--navy); padding: .45rem .85rem .4rem; border-radius: 999px; font-size: .88rem; margin-bottom: 1rem; }
+  .shelf__panel h3 { font-size: var(--step-2); color: #fff; margin-bottom: .8rem; }
+  .shelf__resumen { font-size: var(--step-1); line-height: 1.45; color: var(--on-navy); margin-bottom: 1.4rem; }
+  .shelf__checks { list-style: none; padding: 0; margin: 0 0 1.8rem; display: grid; gap: .6rem; }
+  .shelf__checks li { display: grid; grid-template-columns: 1.3rem 1fr; gap: .6rem; color: var(--on-navy); font-weight: 500; }
+  .shelf__checks svg { width: 1.2rem; height: 1.2rem; color: var(--gold); margin-top: .15rem; }
+  @media (max-width: 900px) {
+    .shelf__body { grid-template-columns: 1fr; }
+    .shelf__row { flex-direction: column; align-items: stretch; gap: 6px; padding: 0 0 10px; }
+    .shelf__spine, .shelf__spine:nth-child(2n) { width: auto; height: 60px; flex-direction: row; padding-inline: 1rem; gap: 1rem; border-radius: 2px 6px 6px 2px; }
+    .shelf__spine .spine__ring { margin: 0; width: 26px; height: 26px; flex: 0 0 auto; }
+    .shelf__spine .spine__label { writing-mode: horizontal-tb; transform: none; padding: .55rem .8rem; font-size: 1.05rem; }
+    .shelf__spine:hover { transform: none; }
+    .shelf__spine[aria-selected="true"] { transform: translateX(14px); }
+  }
+</style>

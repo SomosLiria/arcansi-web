@@ -1,0 +1,152 @@
+---
+// Autodiagnóstico de 8 preguntas. Se calcula en el navegador; no se envía nada.
+import { SERVICIOS } from "../data/site";
+const PREGUNTAS = [
+  { q: "Si faltas una semana, ¿la empresa se resiente de verdad?", s: ["organizacion-empresarial"] },
+  { q: "¿Casi todos los problemas acaban en tu mesa?", s: ["organizacion-empresarial", "gestion-y-direccion"] },
+  { q: "¿Te cuesta saber cuánto margen real te deja cada producto o servicio?", s: ["control-financiero"] },
+  { q: "¿La tesorería te da sustos a final de mes?", s: ["control-financiero"] },
+  { q: "¿Pasas más tiempo apagando fuegos que planificando?", s: ["gestion-y-direccion"] },
+  { q: "¿Hay retrasos, retrabajos o mermas con frecuencia?", s: ["procesos-de-produccion"] },
+  { q: "¿Tienes material parado en el almacén y, a la vez, te falta lo urgente?", s: ["logistica-y-compras"] },
+  { q: "¿Haces descuentos por miedo a perder clientes?", s: ["estrategia-comercial"] },
+];
+const nombres = Object.fromEntries(SERVICIOS.map((s) => [s.slug, s.nombre]));
+---
+<section class="section field-paper diag" id="diagnostico" aria-labelledby="diag-title">
+  <div class="wrap diag__grid">
+    <header class="diag__head">
+      <h2 id="diag-title" class="reveal">¿Podemos ayudarte? Compruébalo en 1 minuto.</h2>
+      <p class="lede muted reveal">Ocho preguntas sinceras. Se calcula en tu navegador: no guardamos ni enviamos nada.</p>
+      <p class="diag__progress label" aria-live="polite"><span class="diag__count">0</span> / {PREGUNTAS.length} respondidas</p>
+      <div class="diag__bar" aria-hidden="true"><span></span></div>
+    </header>
+
+    <form class="folio diag__form" novalidate>
+      <ol class="diag__list">
+        {PREGUNTAS.map((p, i) => (
+          <li class="diag__q">
+            <fieldset data-s={p.s.join(",")}>
+              <legend>{p.q}</legend>
+              <div class="diag__opts">
+                {[["2", "Sí"], ["1", "A veces"], ["0", "No"]].map(([v, l]) => (
+                  <label><input type="radio" name={`q${i}`} value={v} /><span>{l}</span></label>
+                ))}
+              </div>
+            </fieldset>
+          </li>
+        ))}
+      </ol>
+      <button type="submit" class="stamp diag__go">Ver mi resultado
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <p class="diag__err" role="alert" hidden>Responde todas las preguntas para ver tu resultado.</p>
+    </form>
+
+    <div class="glass diag__result" hidden tabindex="-1" aria-live="polite">
+      <p class="label diag__level"></p>
+      <h3 class="diag__title"></h3>
+      <p class="diag__text"></p>
+      <p class="label diag__subt">Por dónde empezaríamos</p>
+      <ul class="diag__svcs"></ul>
+      <div class="diag__actions">
+        <a class="stamp diag__contact" href="/contacto/">Cuéntanos tu situación
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <button type="button" class="diag__reset">Repetir el test</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ nombres, total: PREGUNTAS.length }}>
+  const root = document.getElementById("diagnostico");
+  const form = root.querySelector(".diag__form");
+  const res = root.querySelector(".diag__result");
+  const count = root.querySelector(".diag__count");
+  const bar = root.querySelector(".diag__bar span");
+  const err = root.querySelector(".diag__err");
+  const update = () => {
+    const n = form.querySelectorAll("input:checked").length;
+    count.textContent = n; bar.style.width = `${(n / total) * 100}%`;
+  };
+  form.addEventListener("change", update);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const sets = [...form.querySelectorAll("fieldset")];
+    const answered = sets.map((f) => f.querySelector("input:checked"));
+    if (answered.some((a) => !a)) { err.hidden = false; sets[answered.findIndex((a) => !a)].querySelector("input").focus(); return; }
+    err.hidden = true;
+    let sum = 0; const per = {}; const lines = [];
+    sets.forEach((f, i) => {
+      const v = Number(answered[i].value); sum += v;
+      f.dataset.s.split(",").forEach((s) => (per[s] = (per[s] || 0) + v));
+      lines.push(`- ${f.querySelector("legend").textContent} ${answered[i].nextElementSibling.textContent}`);
+    });
+    const pct = sum / (total * 2);
+    const [lvl, t, txt] = pct >= 0.55
+      ? ["Encaje alto", "Tu empresa necesita orden, y podemos ayudarte.", "Lo que describes es justo el tipo de situación en la que trabajamos cada semana. Tiene solución, y cuanto antes se aborde, menos cuesta."]
+      : pct >= 0.25
+      ? ["Encaje medio", "Hay áreas concretas que conviene ordenar.", "Tu empresa funciona, pero hay puntos que te restan margen o tiempo. Un diagnóstico te diría exactamente cuáles tocar primero."]
+      : ["Encaje bajo", "Tu empresa parece bien encaminada.", "No vemos señales graves. Si aun así quieres una mirada externa sobre algún tema concreto, cuéntanoslo: si no podemos aportarte, te lo diremos."];
+    res.querySelector(".diag__level").textContent = `${lvl} · ${sum} de ${total * 2} puntos`;
+    res.querySelector(".diag__title").textContent = t;
+    res.querySelector(".diag__text").textContent = txt;
+    const top = Object.entries(per).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    res.querySelector(".diag__svcs").innerHTML = top.length
+      ? top.map(([s]) => `<li><a href="/servicios/${s}/">${nombres[s]}</a></li>`).join("")
+      : `<li>Una conversación sin compromiso</li>`;
+    try { sessionStorage.setItem("arcansi-diag", `Resultado del test: ${lvl} (${sum}/${total * 2}).\n${lines.join("\n")}\n\n`); } catch {}
+    form.hidden = true; res.hidden = false; res.focus();
+    res.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  root.querySelector(".diag__reset").addEventListener("click", () => {
+    form.reset(); update(); res.hidden = true; form.hidden = false; form.querySelector("input").focus();
+  });
+  // En la portada, el formulario está en la misma página: lo rellenamos y bajamos
+  root.querySelector(".diag__contact").addEventListener("click", (e) => {
+    const ta = document.getElementById("mensaje");
+    if (ta) { e.preventDefault(); ta.value = sessionStorage.getItem("arcansi-diag") || ""; ta.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(() => ta.focus(), 600); }
+  });
+</script>
+
+<style>
+  .diag__grid { display: grid; grid-template-columns: 1fr 1.35fr; gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+  .diag__head { position: sticky; top: calc(var(--tab-h) + 2rem); display: grid; gap: 1.1rem; }
+  .diag__head h2 { font-size: var(--step-3); color: var(--navy); max-width: 16ch; }
+  .diag__progress { color: var(--navy); font-size: 1rem; margin-top: 1rem; }
+  .diag__bar { height: 6px; border-radius: 99px; background: rgba(0,28,67,.1); overflow: hidden; }
+  .diag__bar span { display: block; height: 100%; width: 0; background: var(--gold); border-radius: inherit; transition: width .5s var(--ease-out); }
+  .diag__list { list-style: none; margin: 0; padding: 0; counter-reset: q; }
+  .diag__q { counter-increment: q; border-bottom: 1px solid var(--paper-edge); }
+  .diag__q:last-child { border-bottom: 0; }
+  fieldset { border: 0; margin: 0; padding: 1.15rem 0; display: grid; grid-template-columns: 1fr auto; gap: .8rem 1.5rem; align-items: center; }
+  legend { float: left; padding: 0; font-weight: 600; color: var(--ink); line-height: 1.4; }
+  legend::before { content: counter(q) "."; font-family: var(--font-display); color: var(--gold-press); margin-right: .5rem; }
+  .diag__opts { display: flex; gap: .4rem; }
+  .diag__opts label { cursor: pointer; }
+  .diag__opts input { position: absolute; opacity: 0; pointer-events: none; }
+  .diag__opts span { display: block; padding: .5rem .85rem; border-radius: 999px; border: 1.5px solid rgba(0,28,67,.18);
+    font-size: .92rem; font-weight: 600; color: var(--navy); transition: background-color .2s, color .2s, border-color .2s; }
+  .diag__opts label:hover span { border-color: var(--navy); }
+  .diag__opts input:checked + span { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+  .diag__opts input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .diag__go { margin-top: 1.5rem; }
+  .diag__err { margin-top: 1rem; color: #A3200F; font-weight: 600; }
+  .diag__result { padding: clamp(1.75rem, 3vw, 2.5rem); background: linear-gradient(150deg, #0A2A5C, #001C43) !important; }
+  .diag__level { color: var(--gold); font-size: 1rem; }
+  .diag__title { font-size: var(--step-2); color: #fff; margin: .6rem 0 .8rem; }
+  .diag__text { color: var(--on-navy); font-size: var(--step-1); line-height: 1.5; }
+  .diag__subt { color: var(--gold); margin: 1.8rem 0 .7rem; font-size: 1rem; }
+  .diag__svcs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .diag__svcs :global(a), .diag__svcs :global(li) { display: inline-block; padding: .55rem 1rem; border-radius: 999px; border: 1.5px solid rgba(207,162,62,.6); color: var(--on-navy); text-decoration: none; font-weight: 600; background: none; }
+  .diag__svcs :global(li) { border: 0; padding: 0; }
+  .diag__svcs :global(a:hover) { background: var(--gold); color: var(--navy); }
+  .diag__actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; }
+  .diag__reset { background: none; border: 0; color: var(--on-navy); font: 600 1rem var(--font-body); text-decoration: underline; cursor: pointer; }
+  @media (max-width: 900px) {
+    .diag__grid { grid-template-columns: 1fr; }
+    .diag__head { position: static; }
+    fieldset { grid-template-columns: 1fr; }
+  }
+</style>

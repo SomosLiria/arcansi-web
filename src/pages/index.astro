@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import ContactForm from "../components/ContactForm.astro";
 import Logo from "../components/Logo.astro";
+import Diagnostico from "../components/Diagnostico.astro";
 import { SITE, SITUACIONES, SERVICIOS, COLABORADORES, ANALISIS, CONSULTORIA, PRINCIPIOS, VALORES } from "../data/site";
 
 const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
@@ -106,6 +107,8 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
       </div>
     </div>
   </section>
+
+  <Diagnostico />
 
   <!-- ═══ BANDA: en tu empresa, no en una presentación ═══ -->
   <section class="band" aria-label="Trabajamos en tu empresa">
