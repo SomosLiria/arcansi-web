@@ -13,9 +13,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 >
   <!-- ═══ PORTADA ═══ -->
   <section class="hero field-navy" id="hero" aria-labelledby="hero-title">
-    <div class="hero__compass" aria-hidden="true"><Logo tone="light" /></div>
-    <svg class="hero__route" aria-hidden="true" preserveAspectRatio="none"><path /></svg>
-    <canvas class="hero__canvas" aria-hidden="true"></canvas>
+    <svg class="hero__org" viewBox="0 0 640 520" aria-hidden="true"></svg>
     <div class="hero__spine spine" aria-hidden="true">
       <span class="spine__ring"></span>
       <span class="spine__label">Tu empresa, en orden</span>
@@ -231,13 +229,9 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches || location.search.includes("nomotion");
 
   // 3D de portada (carga diferida)
-  const canvas = document.querySelector<HTMLCanvasElement>(".hero__canvas");
+  const orgSvg = document.querySelector<SVGSVGElement>(".hero__org");
   const hero = document.getElementById("hero");
-  const hasGL = (() => { try { return !!document.createElement("canvas").getContext("webgl2"); } catch { return false; } })();
-  if (canvas && hero && hasGL) {
-    const go = () => import("../scripts/hero3d").then((m) => m.initHero(canvas, hero, { reduce }));
-    "requestIdleCallback" in window ? (window as any).requestIdleCallback(go, { timeout: 900 }) : setTimeout(go, 300);
-  }
+  if (orgSvg && hero) import("../scripts/org").then((m) => m.initOrg(orgSvg, hero, { reduce }));
 
   // Entrada de portada: el texto se asienta con un leve desenfoque (ya visible por defecto)
   if (!reduce) {
@@ -328,13 +322,19 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero { position: relative; min-height: 100svh; overflow: hidden; display: grid; grid-template-rows: 1fr auto; isolation: isolate;
     background-image: var(--grain), radial-gradient(55% 75% at 76% 46%, #0B3170 0%, rgba(11,49,112,.35) 45%, rgba(0,28,67,0) 75%);
     background-size: 220px, auto; background-blend-mode: soft-light, normal; }
-  .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
-  /* Brújula: la aguja oscila con el desorden y se fija al norte al ordenarse (--needle desde hero3d) */
-  .hero__compass { position: absolute; z-index: -2; width: clamp(340px, 33vw, 500px); left: 73%; top: 46%; translate: -50% -50%; pointer-events: none; }
-  .hero__compass :global(.logo-mark > :not(.logo-needle)) { opacity: .26; }
-  .hero__compass :global(.logo-needle) { filter: drop-shadow(0 10px 24px rgba(0,0,0,.45)); }
-  .hero__compass :global(.logo-needle) { transition: none; }
-  .hero__compass :global(.logo-needle polygon:first-child) { opacity: .4; }
+  /* Organigrama vivo */
+  .hero__org { position: absolute; z-index: 0; right: clamp(1rem, 4vw, 4rem); top: 50%; translate: 0 -50%; width: min(42vw, 600px); height: auto; overflow: visible; pointer-events: none; }
+  .hero__org :global(.org-line) { fill: none; stroke: color-mix(in srgb, rgba(233,238,246,.45), var(--gold) calc(var(--org, 0) * 100%)); stroke-width: 1.6; }
+  .hero__org :global(.org-cross) { stroke: rgba(233,238,246,.22); stroke-width: 1; stroke-dasharray: 4 5; }
+  .hero__org :global(.org-node rect) { fill: #0B2A5E; stroke: rgba(255,255,255,.3); stroke-width: 1; }
+  .hero__org :global(.org-node text) { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .09em; font-size: 15px; fill: var(--on-navy); }
+  .hero__org :global(.org-node--leaf text) { font-size: 12.5px; fill: var(--on-navy-soft); }
+  .hero__org :global(.org-node--head rect) { fill: #143A78; stroke: rgba(207,162,62,calc(.3 + var(--org, 0) * .5)); }
+  .hero__org :global(.org-node--hub rect) { fill: var(--gold); stroke: none; }
+  .hero__org :global(.org-node--hub text) { fill: var(--navy); font-size: 19px; }
+  .hero__org :global(.org-badge circle) { fill: #C2412D; stroke: var(--navy); stroke-width: 3; }
+  .hero__org :global(.org-badge text) { fill: #fff; font-family: var(--font-body); font-weight: 700; font-size: 14px; letter-spacing: 0; }
+  .hero__org :global(.org-badge) { transition: opacity .4s; }
   .cmp-ring { fill: none; stroke: rgba(207,162,62,.32); stroke-width: 2; }
   .cmp-ring--thin { stroke: rgba(233,238,246,.12); stroke-width: 1; }
   .cmp-tick { stroke: rgba(233,238,246,.28); stroke-width: 2; }
@@ -379,7 +379,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero__spine .spine__label { font-size: clamp(.9rem, 1.2vw, 1.15rem); padding: 1.4rem .6rem; }
   @media (max-width: 760px) {
     .hero__spine { width: 48px; top: 30%; opacity: .9; }
-    .hero__compass { width: 250px; left: 92%; top: 42%; opacity: .55; }
+    .hero__org { width: 120vw; right: -62vw; opacity: .5; }
     .hero__spine .spine__label { display: none; }
     .hero__inner > * { max-width: calc(100% - 56px); }
     .hero::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
