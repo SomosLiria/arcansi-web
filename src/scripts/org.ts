@@ -3,24 +3,25 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 // Organigrama vivo: del "todo depende de ti" a una estructura con responsables.
-type N = { id: string; label: string; parent: string | null; start: [number, number]; end: [number, number]; kind: "hub" | "head" | "leaf" };
+type N = { id: string; label: string; problem?: string; parent: string | null; start: [number, number]; end: [number, number]; kind: "hub" | "head" | "leaf" };
 
 const NS = "http://www.w3.org/2000/svg";
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const ease = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+// Cada área nace como el problema que resuelve
 const heads = [
-  { id: "fin", label: "Finanzas", x: 140, kids: ["Tesorería", "Costes"] },
-  { id: "pro", label: "Producción", x: 320, kids: ["Calidad", "Plazos"] },
-  { id: "com", label: "Comercial", x: 500, kids: ["Ventas", "Clientes"] },
+  { id: "fin", label: "Finanzas", problem: "Sin margen", x: 140, kids: [["Tesorería", "Sustos de caja"], ["Costes", "Mermas"]] },
+  { id: "pro", label: "Producción", problem: "Retrasos", x: 320, kids: [["Calidad", "Retrabajos"], ["Plazos", "Urgencias"]] },
+  { id: "com", label: "Comercial", problem: "Descuentos", x: 500, kids: [["Ventas", "Impagos"], ["Clientes", "Quejas"]] },
 ];
 
 function buildNodes(): N[] {
-  const out: N[] = [{ id: "hub", label: "Tú", parent: null, start: [320, 300], end: [320, 80], kind: "hub" }];
+  const out: N[] = [{ id: "hub", label: "Tú", parent: null, start: [320, 300], end: [320, 70], kind: "hub" }];
   const all: Omit<N, "start">[] = [];
   heads.forEach((h) => {
-    all.push({ id: h.id, label: h.label, parent: "hub", end: [h.x, 250], kind: "head" });
-    h.kids.forEach((k, j) => all.push({ id: `${h.id}${j}`, label: k, parent: h.id, end: [h.x + (j ? 46 : -46), 430], kind: "leaf" }));
+    all.push({ id: h.id, label: h.label, problem: h.problem, parent: "hub", end: [h.x, 300], kind: "head" });
+    h.kids.forEach(([k, pb], j) => all.push({ id: `${h.id}${j}`, label: k, problem: pb, parent: h.id, end: [h.x + (j ? 46 : -46), 460], kind: "leaf" }));
   });
   // al inicio: todos en un anillo alrededor de "Tú", desordenados
   all.forEach((n, i) => {
@@ -53,8 +54,20 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
     const w = n.kind === "hub" ? 150 : n.kind === "head" ? 128 : 84, h = n.kind === "hub" ? 54 : n.kind === "head" ? 44 : 34;
     const r = document.createElementNS(NS, "rect");
     r.setAttribute("x", String(-w / 2)); r.setAttribute("y", String(-h / 2)); r.setAttribute("width", String(w)); r.setAttribute("height", String(h)); r.setAttribute("rx", String(h / 2));
-    const t = document.createElementNS(NS, "text"); t.setAttribute("text-anchor", "middle"); t.setAttribute("dy", "0.35em"); t.textContent = n.label;
+    const t = document.createElementNS(NS, "text"); t.setAttribute("text-anchor", "middle"); t.setAttribute("dy", "0.35em"); t.textContent = n.problem ?? n.label;
     g.append(r, t);
+    if (n.kind === "hub") {
+      // la A de Arcansi: aparece al ordenar, con su aguja de brújula
+      const a = document.createElementNS(NS, "g"); a.setAttribute("class", "org-a");
+      a.innerHTML = `<g transform="scale(.3) translate(-283 -340)">
+        <g stroke="#E9EEF6" stroke-width="46"><line x1="280" y1="28" x2="190" y2="290"/><line x1="280" y1="28" x2="370" y2="290"/><line x1="140" y1="430" x2="96" y2="560"/><line x1="420" y1="430" x2="464" y2="560"/></g>
+        <path d="M 172 494 A 150 150 0 1 1 384 262" fill="none" stroke="#E9EEF6" stroke-width="30"/>
+        <path d="M 418 340 A 150 150 0 0 1 312 524" fill="none" stroke="#E9EEF6" stroke-width="30"/>
+        <g class="org-needle"><polygon points="118,582 266,368 300,398" fill="#E9EEF6"/><polygon points="262,366 458,180 304,402" fill="#FEB707"/></g>
+        <circle cx="283" cy="383" r="22" fill="#001C43" stroke="#E9EEF6" stroke-width="7"/></g>`;
+      const cap = document.createElementNS(NS, "text"); cap.setAttribute("class", "org-cap"); cap.setAttribute("text-anchor", "middle"); cap.setAttribute("y", "112"); cap.setAttribute("fill", "#CFA23E"); cap.textContent = "Dirección";
+      a.append(cap); g.append(a);
+    }
     let badge: SVGTextElement | null = null, badgeG: SVGGElement | null = null;
     if (n.kind === "hub") {
       badgeG = document.createElementNS(NS, "g"); badgeG.setAttribute("class", "org-badge"); badgeG.setAttribute("transform", `translate(${w / 2 - 6} ${-h / 2 + 4})`);
@@ -87,7 +100,7 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
       const ay = n.kind === "leaf" ? lerp(hub[1], par[1], e) : par[1];
       let [x, y] = pos[n.id];
       // de borde a borde: sale por debajo del padre y entra por arriba del hijo
-      const hp = (n.kind === "leaf" ? 44 : 54) / 2, hc = (n.kind === "leaf" ? 34 : 44) / 2;
+      const hp = n.kind === "leaf" ? 22 : 27 + 105 * e, hc = (n.kind === "leaf" ? 34 : 44) / 2;
       const ay2 = ay + hp * e, y2 = y - hc * e;
       const my = lerp((ay2 + y2) / 2, ay2 + (y2 - ay2) * 0.5, e);
       // en orden: codos rectos de organigrama; en caos: línea directa
@@ -102,9 +115,19 @@ export function initOrg(svg: SVGSVGElement, section: HTMLElement, opts: { reduce
       l.style.opacity = String(chaos * 0.9);
     });
     const hubEl = els[0];
-    hubEl.t.textContent = e > 0.6 ? "Dirección" : "Tú";
+    // problemas -> áreas: el texto cambia a mitad de camino
+    els.forEach(({ n, t, g }) => { if (n.problem) { t.textContent = e > 0.5 ? n.label : n.problem; g.classList.toggle("is-problem", e <= 0.5); } });
+    // "Tú" se convierte en la A de Arcansi; su aguja busca rumbo y se fija
+    const aIn = Math.min(1, Math.max(0, (e - 0.45) / 0.4));
+    const pill = hubEl.g.querySelectorAll<SVGElement>(":scope > rect, :scope > text");
+    pill.forEach((el) => (el.style.opacity = String(1 - aIn)));
+    const aG = hubEl.g.querySelector<SVGGElement>(".org-a")!;
+    aG.style.opacity = String(aIn);
+    aG.setAttribute("transform", `scale(${(0.7 + aIn * 0.3).toFixed(3)})`);
+    const needle = (Math.sin(time * 1.3) * 70 + Math.sin(time * 0.5 + 1.2) * 50) * (1 - aIn) + Math.sin(time * 9) * 4 * (1 - aIn);
+    aG.querySelector(".org-needle")!.setAttribute("transform", `rotate(${needle.toFixed(2)} 283 383)`);
     const count = Math.round(27 * chaos);
-    if (hubEl.badge && hubEl.badgeG) { hubEl.badge.textContent = String(count); hubEl.badgeG.style.opacity = String(Math.min(1, chaos * 4)); }
+    if (hubEl.badge && hubEl.badgeG) { hubEl.badge.textContent = String(count); hubEl.badgeG.style.opacity = String(Math.min(1, chaos * 4)); hubEl.badgeG.style.display = chaos < 0.03 ? "none" : ""; }
     section.style.setProperty("--org", e.toFixed(3));
   };
 

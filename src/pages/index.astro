@@ -334,7 +334,10 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero__org :global(.org-node--hub text) { fill: var(--navy); font-size: 19px; }
   .hero__org :global(.org-badge circle) { fill: #C2412D; stroke: var(--navy); stroke-width: 3; }
   .hero__org :global(.org-badge text) { fill: #fff; font-family: var(--font-body); font-weight: 700; font-size: 14px; letter-spacing: 0; }
-  .hero__org :global(.org-badge) { transition: opacity .4s; }
+  .hero__org :global(.org-badge) { }
+  .hero__org :global(.org-node.is-problem rect) { stroke: rgba(226,96,76,.75); fill: rgba(90,24,30,.55); }
+  .hero__org :global(.org-node.is-problem text) { fill: #F3C9C1; }
+  .hero__org :global(.org-node--hub .org-cap) { fill: var(--gold); font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 15px; fill: var(--gold); }
   .cmp-ring { fill: none; stroke: rgba(207,162,62,.32); stroke-width: 2; }
   .cmp-ring--thin { stroke: rgba(233,238,246,.12); stroke-width: 1; }
   .cmp-tick { stroke: rgba(233,238,246,.28); stroke-width: 2; }
