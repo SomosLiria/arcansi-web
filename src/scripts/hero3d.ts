@@ -65,7 +65,7 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   geo.computeVertexNormals();
 
   const textures = Array.from({ length: 6 }, (_, i) => paperTexture(i));
-  const count = isSmall ? 8 : 16;
+  const count = isSmall ? 5 : 7;
   const sheets: Sheet[] = [];
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -97,6 +97,23 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
   const aRadius = aR ? toWorld(hubPx[0] + aR.width * 0.5, hubPx[1]).x - hub.x : 2.6;
   const spinePt = spR ? toWorld(spR.left - sRect.left + spR.width / 2, spR.top - sRect.top + spR.height * 0.35) : new THREE.Vector3(5.2, 0.6, 0);
 
+  // Ruta dorada: desde el eje de la A baja y gira hacia el botón principal
+  const W = section.clientWidth, H = section.clientHeight;
+  const cta = section.querySelector<HTMLElement>(".hero__actions .stamp")?.getBoundingClientRect();
+  const endPx = cta ? [cta.right - sRect.left + 24, cta.top - sRect.top + cta.height / 2] : [W * 0.3, H * 0.78];
+  const lowY = Math.min(H * 0.885, Math.max(endPx[1] + 85, hubPx[1] + 180));
+  const r = 60;
+  const routeD = `M ${hubPx[0]} ${hubPx[1]} L ${hubPx[0]} ${lowY - r} Q ${hubPx[0]} ${lowY} ${hubPx[0] - r} ${lowY} L ${endPx[0] + r} ${lowY} Q ${endPx[0]} ${lowY} ${endPx[0]} ${lowY - r} L ${endPx[0]} ${endPx[1] + 18}`;
+  const svgRoute = section.querySelector<SVGSVGElement>(".hero__route");
+  const pathEl = svgRoute?.querySelector<SVGPathElement>("path");
+  if (svgRoute && pathEl) {
+    svgRoute.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    pathEl.setAttribute("d", routeD);
+    const len = pathEl.getTotalLength();
+    section.style.setProperty("--route-len", String(len));
+  }
+  // los folios terminan como hitos a lo largo del tramo horizontal
+  const segA = hubPx[0] - r - 40, segB = endPx[0] + r + 40;
   for (let i = 0; i < count; i++) {
     const mat = new THREE.MeshStandardMaterial({ map: textures[i % textures.length], roughness: 0.92, metalness: 0, side: THREE.DoubleSide, transparent: true });
     const mesh = new THREE.Mesh(geo, mat);
@@ -111,9 +128,11 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
       rot: new THREE.Euler(rand(-0.12, 0.12), rand(-0.14, 0.14), rand(-1.2, 1.2)),
     };
     // Destino: de canto, entrando en el lomo del archivador
+    const k = count > 1 ? i / (count - 1) : 0.5;
+    const wp = toWorld(segA + (segB - segA) * k, lowY, 0.6);
     const order = {
-      pos: new THREE.Vector3(spinePt.x - 0.15 + i * 0.012, spinePt.y + rand(-0.05, 0.05), 0.2),
-      rot: new THREE.Euler(0, -1.5, 0),
+      pos: wp,
+      rot: new THREE.Euler(0, 0, (i % 2 ? 1 : -1) * 0.05),
     };
     mesh.position.copy(chaos.pos); mesh.rotation.copy(chaos.rot);
     scene.add(mesh);
@@ -149,15 +168,14 @@ export function initHero(canvas: HTMLCanvasElement, section: HTMLElement, opts: 
       qa.setFromEuler(cr); qb.setFromEuler(s.order.rot);
       s.mesh.quaternion.slerpQuaternions(qa, qb, e);
       // al entrar en el archivador se encogen y desaparecen
-      const gone = gsap.utils.clamp(0, 1, (e - 0.72) / 0.28);
-      s.mesh.scale.setScalar(baseScale * (1 - gone * 0.55));
-      (s.mesh.material as THREE.MeshStandardMaterial).opacity = 1 - gone;
-      s.mesh.visible = gone < 0.999;
+      // como hitos de un plan: más pequeños y alineados en la ruta
+      s.mesh.scale.setScalar(baseScale * (1 - e * 0.6));
     });
     // Brújula: la aguja busca rumbo en el desorden y se fija al norte al ordenarse
     const settle = 1 - Math.pow(1 - gsap.utils.clamp(0, 1, pr * 1.12), 3);
     const wander = Math.sin(t * 0.9) * 70 + Math.sin(t * 0.37 + 1.3) * 55;
-    const needle = wander * (1 - settle) + Math.sin(t * 7) * 3 * (1 - settle);
+    // al fijarse, la aguja apunta hacia abajo: el inicio de la ruta
+    const needle = wander * (1 - settle) + Math.sin(t * 7) * 3 * (1 - settle) + 135 * settle;
     section.style.setProperty("--needle", `${needle.toFixed(2)}deg`);
 
     camera.position.x += (state.mx * 0.35 - camera.position.x) * 0.04;
