@@ -13,13 +13,13 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 >
   <!-- ═══ PORTADA ═══ -->
   <section class="hero field-navy" id="hero" aria-labelledby="hero-title">
-    <svg class="hero__org" viewBox="0 0 640 560" aria-hidden="true"></svg>
     <div class="hero__spine spine" aria-hidden="true">
       <span class="spine__ring"></span>
       <span class="spine__label">Tu empresa, en orden</span>
     </div>
     <span class="rubber hero__seal" aria-hidden="true">En orden</span>
     <div class="wrap hero__inner">
+      <div class="hero__copy">
       <h1 id="hero-title" class="hero__title">Ordenamos tu empresa para que no dependa todo de&nbsp;ti.</h1>
       <p class="hero__what">Consultoría empresarial para pymes de toda España</p>
       <p class="hero__sub">
@@ -32,6 +32,8 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
         </a>
         <a href="#servicios" class="hero__link">Ver en qué te ayudamos</a>
       </div>
+      </div>
+      <div class="hero__visual" aria-hidden="true"><svg class="hero__org" viewBox="0 0 640 560"></svg></div>
     </div>
     <nav class="hero__index" aria-label="Áreas de trabajo">
       <ul class="wrap">
@@ -323,7 +325,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
     background-image: var(--grain), radial-gradient(55% 75% at 76% 46%, #0B3170 0%, rgba(11,49,112,.35) 45%, rgba(0,28,67,0) 75%);
     background-size: 220px, auto; background-blend-mode: soft-light, normal; }
   /* Organigrama vivo */
-  .hero__org { position: absolute; z-index: 0; right: max(1rem, calc((100vw - var(--max)) / 2 - 1rem)); top: 53%; translate: 0 -50%; width: clamp(420px, 41vw, 700px); height: auto; overflow: visible; pointer-events: none; }
+  .hero__org { display: block; width: 100%; height: auto; overflow: visible; pointer-events: none; }
   .hero__org :global(.org-line) { fill: none; stroke: color-mix(in srgb, rgba(233,238,246,.45), var(--gold) calc(var(--org, 0) * 100%)); stroke-width: 1.6; }
   .hero__org :global(.org-cross) { stroke: rgba(233,238,246,.22); stroke-width: 1; stroke-dasharray: 4 5; }
   .hero__org :global(.org-node rect) { fill: #0B2A5E; stroke: rgba(255,255,255,.3); stroke-width: 1; }
@@ -346,7 +348,15 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .cmp-card { font-family: var(--font-label); font-weight: 700; font-size: 34px; fill: rgba(233,238,246,.45); letter-spacing: .05em; }
   .cmp-needle { transform: rotate(var(--needle, 0deg)); opacity: .9; }
   .hero__inner, .hero__index { position: relative; z-index: 2; }
-  .hero__inner { align-self: center; padding-block: calc(var(--tab-h) + 2.5rem) 2.5rem; }
+  .hero__inner { align-self: center; padding-block: calc(var(--tab-h) + 2.5rem) 2.5rem;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 4vw, 5rem); align-items: center; }
+  .hero__visual { width: 100%; max-width: 640px; justify-self: center; }
+  @media (max-width: 1080px) {
+    .hero__index ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .hero__index a { transform: none; border-radius: 10px 10px 0 0; }
+    .hero__inner { grid-template-columns: 1fr; }
+    .hero__visual { max-width: 520px; order: 2; margin-top: 1rem; }
+  }
   .hero__what { font-family: var(--font-label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: clamp(1rem, .9rem + .4vw, 1.25rem); color: var(--gold); margin-top: 1.4rem; }
   .hero__title { font-size: clamp(2.4rem, 1.4rem + 3.1vw, 4.2rem); max-width: 15ch; letter-spacing: -0.035em; color: #fff; }
   .hero__sub { margin-top: .9rem; max-width: 42ch; font-size: var(--step-1); line-height: 1.5; color: var(--on-navy); }
@@ -382,11 +392,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .hero__spine .spine__label { font-size: clamp(.9rem, 1.2vw, 1.15rem); padding: 1.4rem .6rem; }
   @media (max-width: 760px) {
     .hero__spine { width: 48px; top: 30%; opacity: .9; }
-    .hero__org { width: 120vw; right: -62vw; opacity: .5; }
     .hero__spine .spine__label { display: none; }
-    .hero__inner > * { max-width: calc(100% - 56px); }
-    .hero::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-      background: linear-gradient(to right, rgba(0,28,67,.94) 0%, rgba(0,28,67,.86) 62%, rgba(0,28,67,0) 84%); }
     .hero__index ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .hero__index a { font-size: .86rem; padding: .8rem .55rem .75rem; border-radius: 8px 8px 0 0; transform: none; }
     .hero__index a svg { width: .85rem; height: .85rem; }
@@ -539,4 +545,11 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   .contact__mail { margin-top: 2rem; font-weight: 600; }
   .contact__mail a { color: var(--navy); }
   @media (max-width: 900px) { .contact__grid { grid-template-columns: 1fr; } }
+</style>
+
+<style>
+  @media (max-width: 1080px) {
+    .hero .hero__index ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .hero .hero__index a { transform: none; }
+  }
 </style>
