@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import ContactForm from "../components/ContactForm.astro";
 import Logo from "../components/Logo.astro";
 import Diagnostico from "../components/Diagnostico.astro";
-import { SITE, SITUACIONES, SERVICIOS, SERVICIOS_GRUPO, ANALISIS, CONSULTORIA, PRINCIPIOS, VALORES } from "../data/site";
+import { SITE, SITUACIONES, SERVICIOS, AREAS, ANALISIS, CONSULTORIA, PRINCIPIOS, VALORES } from "../data/site";
 
 const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
 ---
@@ -42,7 +42,7 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
       <h1 id="hero-title" class="hero__title">Ordenamos tu empresa para que no dependa todo de&nbsp;ti.</h1>
       <p class="hero__what">Consultoría para dirigentes de pymes de toda España</p>
       <p class="hero__sub">
-        Hemos estado exactamente donde estás tú ahora: facturar y no ver el beneficio, un equipo que te consulta todo, desencuentros entre socios. Te acompañamos, de dirigente a dirigente, a profesionalizar tu pyme para que vuelvas a disfrutarla. Y cuando toca ejecutar, el mismo grupo lo pone en marcha.
+        Hemos estado exactamente donde estás tú ahora: facturar y no ver el beneficio, un equipo que te consulta todo, desencuentros entre socios. Te acompañamos, de dirigente a dirigente, a profesionalizar tu pyme para que vuelvas a disfrutarla. Y, como grupo, también resolvemos lo legal, los seguros, el personal, la ciberseguridad y la tecnología.
       </p>
       <div class="hero__actions">
         <a href="/contacto/" class="stamp">
@@ -193,15 +193,15 @@ const rots = [-1.6, 1.2, -0.8, 1.5, -1.2, 0.9];
   <section class="section field-paper grp" id="servicios" aria-labelledby="grp-title">
     <div class="wrap">
       <header class="head">
-        <h2 id="grp-title" class="reveal">Y cuando toca ejecutar, lo hacemos también</h2>
-        <p class="lede muted reveal">Arcansi es hoy un grupo. Además de la consultoría, ponemos en marcha la tecnología, la imagen y la presencia que tu empresa necesita, con el mismo criterio y sin intermediarios.</p>
+        <h2 id="grp-title" class="reveal">Todo lo demás que preocupa a un dirigente, en el mismo sitio</h2>
+        <p class="lede muted reveal">Arcansi es hoy un grupo. La consultoría es el centro; alrededor, servicios propios para blindar a los socios, proteger la empresa, reforzar el equipo y ejecutar en tecnología. Un solo interlocutor, el mismo criterio.</p>
       </header>
       <ul class="grp__row">
-        {SERVICIOS_GRUPO.map((s) => (
-          <li class="reveal"><a class="grp__item" href={`/servicios/#${s.id}`}>
+        {AREAS.map((s) => (
+          <li class="reveal"><a class="grp__item" href={`/servicios/${s.slug}/`}>
             <span class="label grp__tab">{s.lomo}</span>
             <span class="grp__name">{s.nombre}</span>
-            <span class="grp__sum">{s.conecta}</span>
+            <span class="grp__sum">{s.resumen}</span>
           </a></li>
         ))}
       </ul>

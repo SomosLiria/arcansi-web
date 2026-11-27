@@ -3,7 +3,7 @@ import Base from "../../layouts/Base.astro";
 import PageHero from "../../components/PageHero.astro";
 import CtaBand from "../../components/CtaBand.astro";
 import Shelf from "../../components/Shelf.astro";
-import { SERVICIOS, COLABORADORES } from "../../data/site";
+import { SERVICIOS, AREAS } from "../../data/site";
 ---
 <Base
   title="Consultoría para dirigentes de pymes"
@@ -32,8 +32,8 @@ import { SERVICIOS, COLABORADORES } from "../../data/site";
         ))}
       </ol>
       <div class="aux reveal">
-        <h2 class="label">Y con especialistas de confianza</h2>
-        <p>Cuando el caso lo pide, sumamos expertos de confianza en {COLABORADORES.join(", ").toLowerCase()}.</p>
+        <h2 class="label">Y cuando hace falta ejecutar</h2>
+        <p>El grupo Arcansi completa la consultoría con <a href="/servicios/">servicios propios</a>: {AREAS.map((a) => a.nombre.toLowerCase()).join(", ")}.</p>
       </div>
     </div>
   </section>

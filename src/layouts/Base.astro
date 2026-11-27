@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Logo from "../components/Logo.astro";
-import { SITE, NAV, SERVICIOS, SERVICIOS_GRUPO } from "../data/site";
+import { SITE, NAV, SERVICIOS, AREAS } from "../data/site";
 
 interface Props {
   title: string;
@@ -38,9 +38,9 @@ const org = {
         "@type": "Offer",
         itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/consultoria/${s.slug}/` },
       })),
-      ...SERVICIOS_GRUPO.map((s) => ({
+      ...AREAS.map((s) => ({
         "@type": "Offer",
-        itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/servicios/#${s.id}` },
+        itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/servicios/${s.slug}/` },
       })),
     ],
   },
@@ -111,7 +111,7 @@ const org = {
         </nav>
         <nav aria-label="Servicios" class="foot__col">
           <p class="label foot__h">Servicios</p>
-          <ul>{SERVICIOS_GRUPO.map((s) => <li><a href={`/servicios/#${s.id}`}>{s.nombre}</a></li>)}</ul>
+          <ul>{AREAS.map((s) => <li><a href={`/servicios/${s.slug}/`}>{s.nombre}</a></li>)}</ul>
         </nav>
         <nav aria-label="Arcansi" class="foot__col">
           <p class="label foot__h">Arcansi</p>

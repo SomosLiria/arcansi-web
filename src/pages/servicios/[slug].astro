@@ -1,0 +1,208 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHero from "../../components/PageHero.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import { SITE, AREAS } from "../../data/site";
+import type { Area } from "../../data/servicios";
+
+export function getStaticPaths() {
+  return AREAS.map((a) => ({ params: { slug: a.slug }, props: { a } }));
+}
+const { a } = Astro.props as { a: Area };
+const url = `${SITE.url}/servicios/${a.slug}/`;
+const otros = AREAS.filter((x) => x.slug !== a.slug);
+const preguntas = a.bloques.flatMap((b) => (b.preguntas ?? []).map((p) => ({ q: `${b.titulo}: ${p.q.toLowerCase()}`, a: p.a })));
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: a.nombre,
+    description: a.seoDescription,
+    url,
+    provider: { "@id": `${SITE.url}/#arcansi` },
+    areaServed: { "@type": "Country", name: "España" },
+    audience: { "@type": "BusinessAudience", name: "Dirigentes de pymes" },
+    hasOfferCatalog: a.bloques.length
+      ? { "@type": "OfferCatalog", name: a.nombre, itemListElement: a.bloques.map((b) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: b.titulo, description: b.texto } })) }
+      : undefined,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: `${SITE.url}/` },
+      { "@type": "ListItem", position: 2, name: "Servicios", item: `${SITE.url}/servicios/` },
+      { "@type": "ListItem", position: 3, name: a.nombre, item: url },
+    ],
+  },
+  ...(preguntas.length
+    ? [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: preguntas.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }]
+    : []),
+];
+const check = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>`;
+---
+<Base title={a.seoTitle} description={a.seoDescription} schema={schema}>
+  <PageHero title={a.nombre} lomo={a.lomo} crumbs={[{ href: "/servicios/", label: "Servicios" }, { href: url, label: a.nombre }]}>
+    <p>{a.resumen}</p>
+  </PageHero>
+
+  <section class="section field-paper">
+    <div class="wrap lead">
+      {a.intro.map((p) => <p class="reveal">{p}</p>)}
+      {a.bloques.length > 1 && (
+        <nav class="toc reveal" aria-label="En esta página">
+          <p class="label">En esta página</p>
+          <ul>{a.bloques.map((b) => <li><a href={`#${b.id}`}>{b.titulo}</a></li>)}</ul>
+        </nav>
+      )}
+    </div>
+  </section>
+
+  {a.pasos && (
+    <section class="section field-navy steps" aria-labelledby="pasos-t">
+      <div class="wrap">
+        <h2 id="pasos-t" class="steps__title reveal">{a.pasos.titulo}</h2>
+        {a.pasos.texto && <p class="steps__text reveal">{a.pasos.texto}</p>}
+        <ol class="steps__list">
+          {a.pasos.items.map((p, i) => (
+            <li class="reveal"><span class="steps__n">{String(i + 1).padStart(2, "0")}</span><h3>{p.t}</h3><p>{p.d}</p></li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  {a.bloques.length > 0 && (
+    <section class="section field-paper blocks">
+      <div class="wrap">
+        {a.bloques.map((b) => (
+          <article class="block" id={b.id}>
+            <div class="block__head reveal">
+              <h2>{b.titulo}</h2>
+              <p>{b.texto}</p>
+              {b.items && <ul class="checks">{b.items.map((c) => <li><Fragment set:html={check} />{c}</li>)}</ul>}
+            </div>
+            {b.preguntas && (
+              <div class="block__qa">
+                {b.preguntas.map((q) => (
+                  <details class="qa">
+                    <summary>{q.q}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+                    <p>{q.a}</p>
+                  </details>
+                ))}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {a.fichas && (
+    <section class="section field-paper cards" aria-labelledby="fichas-t">
+      <div class="wrap">
+        <h2 id="fichas-t" class="cards__title reveal">{a.fichas.titulo}</h2>
+        {a.fichas.texto && <p class="muted reveal">{a.fichas.texto}</p>}
+        <ul class="cards__grid">
+          {a.fichas.items.map((f) => (
+            <li class="folio reveal"><h3>{f.t}</h3><p>{f.d}</p></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {a.ventajas && (
+    <section class="section field-deep gains" aria-labelledby="ventajas-t">
+      <div class="wrap">
+        <h2 id="ventajas-t" class="gains__title reveal">{a.ventajas.titulo}</h2>
+        <ul class="gains__grid">
+          {a.ventajas.items.map((v) => (
+            <li class="reveal"><h3>{v.t}</h3><p>{v.d}</p></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {(a.cierre || a.nota) && (
+    <section class="section field-paper close">
+      <div class="wrap">
+        {a.cierre && <p class="close__text reveal">{a.cierre}</p>}
+        {a.nota && <p class="close__note reveal">{a.nota}</p>}
+      </div>
+    </section>
+  )}
+
+  <CtaBand title={`¿Hablamos de ${a.nombre.split(":")[0].toLowerCase()}?`} />
+
+  <section class="section field-paper others" aria-labelledby="otros">
+    <div class="wrap">
+      <h2 id="otros" class="label others__t">Otros servicios</h2>
+      <ul class="others__row">
+        {otros.map((o) => (
+          <li><a class="spine others__spine" href={`/servicios/${o.slug}/`}><span class="spine__ring" aria-hidden="true"></span><span class="spine__label">{o.lomo}</span></a></li>
+        ))}
+        <li><a class="spine others__spine" href="/consultoria/"><span class="spine__ring" aria-hidden="true"></span><span class="spine__label">Consultoría</span></a></li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lead { display: grid; gap: 1.5rem; font-size: var(--step-1); line-height: 1.55; max-width: 62ch; color: var(--ink); }
+  .toc { margin-top: 1rem; font-size: 1rem; }
+  .toc .label { color: var(--navy); margin-bottom: .6rem; }
+  .toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .toc a { display: inline-block; padding: .4rem .9rem; border: 1px solid var(--paper-edge); border-radius: 999px; color: var(--navy); text-decoration: none; font-weight: 600; background: #fff; }
+  .toc a:hover { border-color: var(--gold-press); }
+
+  .steps__title { font-size: var(--step-3); color: #fff; }
+  .steps__text { color: var(--on-navy-soft); margin-top: 1rem; max-width: 60ch; }
+  .steps__list { list-style: none; margin: 2.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 2rem; }
+  .steps__list li { border-top: 3px solid var(--gold); padding-top: 1rem; }
+  .steps__n { font-family: var(--font-display); color: var(--gold); font-size: 1.4rem; }
+  .steps__list h3 { color: #fff; font-size: var(--step-1); margin: .4rem 0; }
+  .steps__list p { color: var(--on-navy-soft); font-size: .98rem; }
+
+  .blocks .wrap { display: grid; gap: clamp(3rem, 6vw, 5rem); }
+  .block { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-items: start; scroll-margin-top: calc(var(--tab-h) + 2rem); padding-top: 2rem; border-top: 2px solid var(--navy); }
+  .block__head h2 { font-size: var(--step-2); color: var(--navy); letter-spacing: -.02em; line-height: 1.1; margin-bottom: 1rem; }
+  .block__head > p { color: var(--ink-soft); font-size: 1.05rem; }
+  .block:not(:has(.block__qa)) { grid-template-columns: 1fr; }
+  .block:not(:has(.block__qa)) .block__head { max-width: 62ch; }
+  .checks { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: .6rem; }
+  .checks li { display: grid; grid-template-columns: 1.3rem 1fr; gap: .6rem; font-weight: 500; }
+  .checks :global(svg) { width: 1.2rem; height: 1.2rem; color: var(--gold-press); margin-top: .15rem; }
+  .qa { border-top: 1px solid var(--paper-edge); }
+  .qa:last-child { border-bottom: 1px solid var(--paper-edge); }
+  .qa summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 1.5rem; align-items: center; padding: 1.1rem 0; font-weight: 700; color: var(--navy); }
+  .qa summary::-webkit-details-marker { display: none; }
+  .qa summary svg { width: 1.2rem; height: 1.2rem; flex: 0 0 auto; color: var(--gold-press); transition: transform .35s var(--ease-out); }
+  .qa[open] summary svg { transform: rotate(45deg); }
+  .qa p { padding: 0 0 1.2rem; color: var(--ink-soft); }
+
+  .cards { padding-top: 0; }
+  .cards__title { font-size: var(--step-3); color: var(--navy); margin-bottom: .6rem; }
+  .cards__grid { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 1.25rem; }
+  .cards__grid h3 { color: var(--navy); font-size: var(--step-1); margin-bottom: .4rem; }
+  .cards__grid p { color: var(--ink-soft); font-size: .98rem; }
+
+  .gains__title { font-size: var(--step-3); color: #fff; }
+  .gains__grid { list-style: none; margin: 2.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 2rem 2.5rem; }
+  .gains__grid h3 { color: var(--gold); font-size: var(--step-1); margin-bottom: .4rem; }
+  .gains__grid p { color: var(--on-navy); }
+
+  .close__text { font-family: var(--font-display); font-size: var(--step-2); color: var(--navy); line-height: 1.25; letter-spacing: -.015em; max-width: 40ch; }
+  .close__note { margin-top: 1.5rem; color: var(--ink-soft); font-size: .95rem; max-width: 60ch; }
+
+  .others { padding-block: 4rem 0; overflow: hidden; }
+  .others__t { color: var(--navy); font-size: 1.2rem; margin-bottom: 1.5rem; }
+  .others__row { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; align-items: flex-end; }
+  .others__spine { width: 64px; height: 230px; text-decoration: none; transition: transform .4s var(--ease-out); }
+  .others__row li:nth-child(2n) .others__spine { height: 200px; background: #0D3270; }
+  .others__spine:hover { transform: translateY(-14px); }
+  @media (max-width: 900px) { .block { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .others__row { overflow-x: auto; } .others__spine { flex: 0 0 auto; } }
+</style>
