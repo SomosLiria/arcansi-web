@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Logo from "../components/Logo.astro";
-import { SITE, NAV, SERVICIOS } from "../data/site";
+import { SITE, NAV, SERVICIOS, SERVICIOS_GRUPO } from "../data/site";
 
 interface Props {
   title: string;
@@ -32,11 +32,17 @@ const org = {
   slogan: "Consultoría pragmática para dirigentes de pymes",
   hasOfferCatalog: {
     "@type": "OfferCatalog",
-    name: "Servicios de consultoría para pymes",
-    itemListElement: SERVICIOS.map((s) => ({
-      "@type": "Offer",
-      itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/servicios/${s.slug}/` },
-    })),
+    name: "Consultoría y servicios para pymes",
+    itemListElement: [
+      ...SERVICIOS.map((s) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/consultoria/${s.slug}/` },
+      })),
+      ...SERVICIOS_GRUPO.map((s) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: s.nombre, url: `${SITE.url}/servicios/#${s.id}` },
+      })),
+    ],
   },
 };
 ---
@@ -96,12 +102,16 @@ const org = {
         <div class="foot__brand">
           <Logo tone="light" class="foot__mark" />
           <p class="label foot__name">Arcansi</p>
-          <p class="muted">Consultoría para pymes · Constructiva, clara y pragmática</p>
+          <p class="muted">Consultoría para dirigentes de pymes · Constructiva, clara y pragmática</p>
           <a class="foot__mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
         </div>
+        <nav aria-label="Consultoría" class="foot__col">
+          <p class="label foot__h">Consultoría</p>
+          <ul>{SERVICIOS.map((s) => <li><a href={`/consultoria/${s.slug}/`}>{s.nombre}</a></li>)}</ul>
+        </nav>
         <nav aria-label="Servicios" class="foot__col">
           <p class="label foot__h">Servicios</p>
-          <ul>{SERVICIOS.map((s) => <li><a href={`/servicios/${s.slug}/`}>{s.nombre}</a></li>)}</ul>
+          <ul>{SERVICIOS_GRUPO.map((s) => <li><a href={`/servicios/#${s.id}`}>{s.nombre}</a></li>)}</ul>
         </nav>
         <nav aria-label="Arcansi" class="foot__col">
           <p class="label foot__h">Arcansi</p>
@@ -114,7 +124,6 @@ const org = {
       <div class="wrap foot__base">
         <p>© {new Date().getFullYear()} Arcansi · Esta web no utiliza cookies ni trackers</p>
         <p><a href="/aviso-legal/">Aviso legal</a> · <a href="/privacidad/">Privacidad</a></p>
-        <p>Diseño y desarrollo: <a href={SITE.builder.url} rel="noopener">{SITE.builder.name}</a></p>
       </div>
     </footer>
 
@@ -163,7 +172,7 @@ const org = {
   }
 
   .foot { padding-block: 5rem 2rem; }
-  .foot__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 3rem; }
+  .foot__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 3rem; }
   :global(.foot__mark) { width: 54px; margin-bottom: 1rem; }
   .foot__name { font-size: 1.8rem; letter-spacing: .24em; margin-bottom: .75rem; }
   .foot__brand p.muted { max-width: 32ch; }
@@ -174,5 +183,6 @@ const org = {
   .foot__col a:hover { color: var(--on-navy); text-decoration: underline; }
   .foot__base { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid rgba(233,238,246,.14);
     display: flex; flex-wrap: wrap; gap: .75rem 2rem; justify-content: space-between; font-size: var(--step--1); color: var(--on-navy-soft); }
-  @media (max-width: 760px) { .foot__grid { grid-template-columns: 1fr; } }
+  @media (max-width: 960px) { .foot__grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .foot__grid { grid-template-columns: 1fr; } }
 </style>

@@ -172,3 +172,12 @@ main { overflow-x: clip; }
   .js .reveal { opacity: 1; transform: none; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Títulos con efecto de escritura */
+.tw-word { display: inline-block; white-space: nowrap; }
+.tw-char { display: inline-block; white-space: pre; }
+.tw-caret {
+  display: inline-block; width: .08em; height: .9em; margin-left: .06em; vertical-align: -0.08em;
+  background: var(--gold); border-radius: 1px; animation: tw-blink .7s steps(1) infinite;
+}
+@keyframes tw-blink { 50% { opacity: 0; } }

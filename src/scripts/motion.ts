@@ -53,7 +53,83 @@ if (reduce) {
   ScrollTrigger.batch(".reveal", {
     start: "top 88%",
     onEnter: (els) =>
-      gsap.to(els, { y: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: true }),
+      gsap.to(els, { y: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, overwrite: "auto" }),
+  });
+
+  // Títulos que se escriben solos al entrar en pantalla
+  const splitChars = (root: HTMLElement) => {
+    const chars: HTMLElement[] = [];
+    const walk = (node: Node) => {
+      [...node.childNodes].forEach((n) => {
+        if (n.nodeType === Node.TEXT_NODE) {
+          const frag = document.createDocumentFragment();
+          (n.textContent || "").split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (/^\s+$/.test(part) && !part.includes(" ")) { frag.append(part); return; }
+            const word = document.createElement("span");
+            word.className = "tw-word";
+            [...part].forEach((c) => {
+              const s = document.createElement("span");
+              s.className = "tw-char";
+              s.textContent = c;
+              word.append(s);
+              chars.push(s);
+            });
+            frag.append(word);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === Node.ELEMENT_NODE && !(n as HTMLElement).matches("svg, svg *")) {
+          walk(n);
+        }
+      });
+    };
+    walk(root);
+    return chars;
+  };
+
+  document.querySelectorAll<HTMLElement>("h1, h2, h3").forEach((h) => {
+    if (h.dataset.tw === "off" || h.closest("[data-tw-off]")) return;
+    const label = h.textContent?.replace(/\s+/g, " ").trim() || "";
+    h.setAttribute("aria-label", label);
+    const chars = splitChars(h);
+    if (!chars.length) return;
+    [...h.children].forEach((c) => c.setAttribute("aria-hidden", "true"));
+    gsap.set(chars, { opacity: 0, y: "0.25em" });
+    const caret = document.createElement("span");
+    caret.className = "tw-caret";
+    caret.setAttribute("aria-hidden", "true");
+    const isH1 = h.tagName === "H1";
+    const per = isH1 ? 0.028 : 0.018;
+    const total = Math.min(chars.length * per, isH1 ? 1.8 : 1.1);
+    ScrollTrigger.create({
+      trigger: h,
+      start: "top 85%",
+      once: true,
+      onEnter: () => {
+        h.append(caret);
+        gsap.to(chars, {
+          opacity: 1, y: 0, duration: 0.35, ease: "power3.out",
+          stagger: { each: total / chars.length },
+          onUpdate() {
+            const i = Math.floor(this.progress() * chars.length);
+            const at = chars[Math.min(i, chars.length - 1)];
+            at.after(caret);
+          },
+          onComplete: () => {
+            chars[chars.length - 1].after(caret);
+            gsap.to(caret, { opacity: 0, duration: 0.3, delay: 1.4, onComplete: () => caret.remove() });
+          },
+        });
+      },
+    });
+  });
+
+  // Párrafos destacados: palabras que suben en cascada
+  document.querySelectorAll<HTMLElement>(".lede, .hero__sub, .hero__what").forEach((p) => {
+    gsap.fromTo(p, { opacity: 0, y: 0 }, {
+      opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.25, overwrite: false,
+      scrollTrigger: { trigger: p, start: "top 88%", once: true },
+    });
   });
 
   // Sellos que "golpean" al entrar

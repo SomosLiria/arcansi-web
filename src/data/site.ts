@@ -2,14 +2,14 @@ export const SITE = {
   name: "Arcansi",
   url: "https://arcansi.com",
   email: "consultoria@arcansi.com",
-  tagline: "Consultoría empresarial pragmática para pymes",
+  tagline: "Consultoría para dirigentes de pymes",
   description:
-    "Consultoría empresarial para pymes de toda España. Ordenamos estructura, finanzas, procesos, compras y ventas para que tu empresa no dependa todo de ti.",
-  builder: { name: "liriacrea.com", url: "https://liriacrea.com" },
+    "Consultoría para dirigentes de pymes de toda España. Ordenamos estructura, finanzas, procesos, compras y ventas, y ponemos en marcha la web, la marca, la IA y el software que tu empresa necesita.",
 };
 
 export const NAV = [
   { href: "/situaciones/", label: "Situaciones" },
+  { href: "/consultoria/", label: "Consultoría" },
   { href: "/servicios/", label: "Servicios" },
   { href: "/metodologia/", label: "Metodología" },
   { href: "/sobre-arcansi/", label: "Sobre Arcansi" },
@@ -260,9 +260,100 @@ export const SERVICIOS: Servicio[] = [
 export const COLABORADORES = [
   "Asesoría legal y societaria",
   "Seguros",
-  "Marketing digital",
-  "Aplicaciones de IA",
   "Ciberseguridad",
+];
+
+export type ServicioGrupo = {
+  id: string;
+  nombre: string;
+  lomo: string;
+  resumen: string;
+  incluye: string[];
+  conecta: string;
+};
+
+/** Servicios de ejecución del grupo Arcansi: complementan la consultoría. */
+export const SERVICIOS_GRUPO: ServicioGrupo[] = [
+  {
+    id: "formacion-ia",
+    nombre: "Formación en IA para empresas",
+    lomo: "IA",
+    resumen:
+      "Que cada puesto de tu equipo use la inteligencia artificial en su trabajo real. No es un curso estándar: lo preparamos a medida después de conocer cada puesto.",
+    incluye: [
+      "Visita para conocer cada puesto",
+      "Formación a medida, presencial o en remoto",
+      "Instrucciones y asistentes reutilizables",
+      "Revisión a los 15-30 días",
+    ],
+    conecta: "Dirección, administración, ventas, marketing y operaciones.",
+  },
+  {
+    id: "software-a-medida",
+    nombre: "Software a medida",
+    lomo: "Software",
+    resumen:
+      "Estudiamos tu empresa y desarrollamos una aplicación adaptada a tus procesos: facturas, inventario, costes, márgenes o pedidos en un solo sitio.",
+    incluye: [
+      "Estudio de tus procesos",
+      "Primera versión de alcance definido",
+      "Datos preparados y migrados",
+      "Equipo formado para usarla",
+    ],
+    conecta: "El paso natural cuando la consultoría ha ordenado tus procesos.",
+  },
+  {
+    id: "web-corporativa",
+    nombre: "Web corporativa",
+    lomo: "Web",
+    resumen:
+      "Una web clara y rápida que explique bien lo que haces y esté preparada para recibir consultas de clientes.",
+    incluye: [
+      "Hasta cinco páginas",
+      "Diseño propio y textos claros",
+      "Preparada para recibir consultas",
+    ],
+    conecta: "Tu estrategia comercial, contada hacia fuera.",
+  },
+  {
+    id: "tienda-online",
+    nombre: "Tienda online",
+    lomo: "Tienda",
+    resumen:
+      "Diseño, catálogo y compra online para vender tus productos por internet sin complicaciones.",
+    incluye: [
+      "Diseño de la tienda",
+      "Catálogo de productos",
+      "Proceso de compra online",
+    ],
+    conecta: "Un nuevo canal de venta con margen controlado.",
+  },
+  {
+    id: "marca",
+    nombre: "Estudio de marca y rebranding",
+    lomo: "Marca",
+    resumen:
+      "Estudiamos y renovamos la identidad de tu empresa para que se presente como lo que es: un negocio profesional.",
+    incluye: [
+      "Estudio de la marca actual",
+      "Dirección creativa",
+      "Dos rondas de cambios",
+    ],
+    conecta: "Una empresa ordenada por dentro que también lo parece por fuera.",
+  },
+  {
+    id: "redes-sociales",
+    nombre: "Redes sociales",
+    lomo: "Redes",
+    resumen:
+      "Planificamos el mes, diseñamos y escribimos cada publicación y la programamos. Tú revisas y apruebas antes de que salga.",
+    incluye: [
+      "Nueve publicaciones al mes",
+      "Diseño, textos y programación",
+      "Instagram y Facebook",
+    ],
+    conecta: "Presencia constante sin quitarte tiempo de dirigir.",
+  },
 ];
 
 export type Estacion = { titulo: string; sello: string; texto: string };

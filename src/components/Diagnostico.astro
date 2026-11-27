@@ -94,7 +94,7 @@ const nombres = Object.fromEntries(SERVICIOS.map((s) => [s.slug, s.nombre]));
     res.querySelector(".diag__text").textContent = txt;
     const top = Object.entries(per).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 3);
     res.querySelector(".diag__svcs").innerHTML = top.length
-      ? top.map(([s]) => `<li><a href="/servicios/${s}/">${nombres[s]}</a></li>`).join("")
+      ? top.map(([s]) => `<li><a href="/consultoria/${s}/">${nombres[s]}</a></li>`).join("")
       : `<li>Una conversación sin compromiso</li>`;
     try { sessionStorage.setItem("arcansi-diag", `Resultado del test: ${lvl} (${sum}/${total * 2}).\n${lines.join("\n")}\n\n`); } catch {}
     form.hidden = true; res.hidden = false; res.focus();
